@@ -1,0 +1,249 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using System.Diagnostics;
+using System.Threading;
+
+namespace OpenTK_002_WindowsForm
+{
+    class objStack
+    {
+        public static List<glPrimitives> toDraw;
+        public static glPrimitives progressObj;
+        private static bool drawProgressObj = false;
+        private static bool isDrawing = false;
+        private static int id = 100;
+        public objStack()
+        {
+            toDraw = new List<glPrimitives>();
+            toDraw.Clear();
+        }
+
+        public bool busyDrawing()
+        {
+            return isDrawing;
+        }
+
+        public bool useDrawProgress
+        {
+            get { return drawProgressObj; }
+            set { drawProgressObj = value;}
+        }
+
+        public void drawProgress()
+        {
+            if (progressObj.getPrimitiveType() == "LINE")
+                drawLine(progressObj);
+            if (progressObj.getPrimitiveType() == "POINT")
+                drawPoint(progressObj);
+            if (progressObj.getPrimitiveType() == "QUAD")
+                drawQuad(progressObj);
+        }
+
+        public void drawPrimList()
+        {
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                glPrimitives temp = toDraw[i];
+                string debugType = temp.getPrimitiveType();
+                switch (debugType)
+                {
+                    case "TRIANGLE":
+                        isDrawing = true;
+                        drawTriangle(temp);
+                        break;
+                    case "LINE":
+                        isDrawing = true;
+                        drawLine(temp);
+                        break;
+                    case "POINT":
+                        isDrawing = true;
+                        drawPoint(temp);
+                        break;
+                    case "POLYGON":
+                        isDrawing = true;
+                        drawPolygon(temp);
+                        break;
+                    case "QUAD":
+                        isDrawing = true;
+                        drawQuad(temp);
+                        break;
+                    default:
+                        isDrawing = false;
+                        break;
+                }
+                isDrawing = false;
+            }
+            if (drawProgressObj)
+                drawProgress();
+
+        }
+
+        public void drawQuad(glPrimitives drawQuad)
+        {
+            List<Point> geoData = drawQuad.getGeoData();
+            float size = drawQuad.glSize;
+            if (drawQuad.isSelected)
+                GL.Color3(drawQuad.selectedColor);
+            else
+                GL.Color3(drawQuad.propColor);
+            GL.Begin(BeginMode.Quads);
+            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+            GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+            GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+            GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+            
+            GL.End();
+        }
+
+        public void drawPoint(glPrimitives drawPt)
+        {
+            List<Point> geoData = drawPt.getGeoData();
+            float size = drawPt.glSize;
+            if (drawPt.isSelected)
+                GL.Color3(drawPt.selectedColor);
+            else
+                GL.Color3(drawPt.propColor);
+            GL.PointSize(drawPt.glSize);
+            GL.Begin(BeginMode.Points);
+            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+            GL.End();
+        }
+
+        public void drawTriangle(glPrimitives drawTri)
+        {
+            // draw as a triangle
+            List<Point> geoData = drawTri.getGeoData();
+            if (drawTri.isSelected)
+                GL.Color3(drawTri.selectedColor);
+            else
+                GL.Color3(drawTri.propColor); 
+            GL.Begin(BeginMode.Triangles);
+            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+            GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+            GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+            GL.End();
+            
+        }
+
+        private void drawLine(glPrimitives drawLine)
+        {
+            List<Point> geoData = drawLine.getGeoData();
+            if (drawLine.isSelected)
+                GL.Color3(drawLine.selectedColor);
+            else
+                GL.Color3(drawLine.propColor); 
+            GL.Begin(BeginMode.Lines);
+            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+            GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+            GL.End();
+        }
+
+        private void drawPolygon(glPrimitives drawPoly)
+        {
+            List<Point> geoData = drawPoly.getGeoData();
+            if (drawPoly.isSelected)
+                GL.Color3(drawPoly.selectedColor);
+            else
+                GL.Color3(drawPoly.propColor);
+            GL.Begin(BeginMode.Polygon);
+            for (int i = 0; i < geoData.Count(); i++)
+            {
+                GL.Vertex3(geoData[i].X, geoData[i].Y, 0);
+            }
+            GL.End();
+        }
+
+        public void Add( glPrimitives obj )
+        {
+            id += 1;
+            obj.ID = id;
+            toDraw.Add(obj);
+        }
+
+        public string[] viewObjectList()
+        {
+            List<string> result = new List<string>();
+
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                result.Add(toDraw[i].ID.ToString() + ": " + toDraw[i].getPrimitiveType());
+            }
+            return result.ToArray();
+        }
+
+        public glPrimitives getPrimByID(int IDobj)
+        {
+            glPrimitives result = new glPrimitives();
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                if (toDraw[i].ID == IDobj)
+                    return toDraw[i];
+            }
+            return toDraw[0];
+        }
+
+        public void selectPrimByID(int IDobj)
+        {
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                if (toDraw[i].ID == IDobj)
+                    toDraw[i].isSelected = true;
+            }
+        }
+
+        public void deselectAll()
+        {
+            for (int i = 0; i < toDraw.Count; i++)
+                toDraw[i].isSelected = false;
+        }
+
+        public void removePrimByID(int IDobj)
+        {
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                if (toDraw[i].ID == IDobj)
+                    toDraw.RemoveAt(i);
+            }
+        }
+        
+        public int getID(string listBoxItem)
+        {
+            string temp = listBoxItem.Substring(0, listBoxItem.IndexOf(":"));
+            int result = 0;
+            try
+            {
+                result = Convert.ToInt32(temp);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            return result;
+        }
+
+        public void deleteLast()
+        {
+            toDraw.RemoveAt(toDraw.Count - 1);
+        }
+
+        public void deleteAll()
+        {
+            toDraw.Clear();
+        }
+
+
+        public void setProgressObj(glPrimitives obj)
+        {
+            progressObj = new glPrimitives();
+            progressObj = obj;
+        }
+    }
+}

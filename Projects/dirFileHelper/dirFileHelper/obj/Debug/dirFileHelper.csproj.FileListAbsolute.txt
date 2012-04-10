@@ -1,0 +1,5 @@
+c:\users\rob\documents\visual studio 2010\Projects\dirFileHelper\dirFileHelper\obj\Debug\ResolveAssemblyReference.cache
+c:\users\rob\documents\visual studio 2010\Projects\dirFileHelper\dirFileHelper\bin\Debug\dirFileHelper.exe
+c:\users\rob\documents\visual studio 2010\Projects\dirFileHelper\dirFileHelper\bin\Debug\dirFileHelper.pdb
+c:\users\rob\documents\visual studio 2010\Projects\dirFileHelper\dirFileHelper\obj\Debug\dirFileHelper.exe
+c:\users\rob\documents\visual studio 2010\Projects\dirFileHelper\dirFileHelper\obj\Debug\dirFileHelper.pdb

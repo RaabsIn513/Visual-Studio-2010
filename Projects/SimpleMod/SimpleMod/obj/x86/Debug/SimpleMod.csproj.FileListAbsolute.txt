@@ -1,0 +1,9 @@
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\bin\Debug\SimpleMod.exe
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\bin\Debug\SimpleMod.pdb
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\SimpleMod.Form1.resources
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\SimpleMod.Properties.Resources.resources
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\GenerateResource.read.1.tlog
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\GenerateResource.write.1.tlog
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\SimpleMod.exe
+c:\users\rob\documents\visual studio 2010\Projects\SimpleMod\SimpleMod\obj\x86\Debug\SimpleMod.pdb

@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeHeLessons", "CsGL_001\NeHeLessons.csproj", "{01A66B01-D23F-40A3-8D73-A63B3C669178}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01A66B01-D23F-40A3-8D73-A63B3C669178}.Debug|x86.ActiveCfg = Debug|x86
+		{01A66B01-D23F-40A3-8D73-A63B3C669178}.Debug|x86.Build.0 = Debug|x86
+		{01A66B01-D23F-40A3-8D73-A63B3C669178}.Release|x86.ActiveCfg = Release|x86
+		{01A66B01-D23F-40A3-8D73-A63B3C669178}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
