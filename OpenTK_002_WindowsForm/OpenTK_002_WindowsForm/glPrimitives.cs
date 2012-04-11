@@ -17,8 +17,8 @@ namespace OpenTK_002_WindowsForm
         private int _ID;
         private Color _color = Color.Black;
         private Color _selectedColor = Color.Fuchsia;
-        private float _size = 1;
         private bool select = false;
+        private bool _showVerts = false;
 
         public glPrimitives()
         {
@@ -37,6 +37,13 @@ namespace OpenTK_002_WindowsForm
             _points = new List<Point>();
             _points = points;
             _type = type;
+        }
+
+        public glPrimitives idk()
+        {
+            quad lol = new quad(new Point(0, 0), new Point(100, 100));
+
+            return lol;
         }
 
         public bool isSelected
@@ -96,12 +103,6 @@ namespace OpenTK_002_WindowsForm
             {
                 _selectedColor = value;
             }
-        }
-
-        public float glSize
-        {
-            get { return _size; }
-            set { _size = value; }
         }
     }
 }

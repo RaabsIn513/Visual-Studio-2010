@@ -21,9 +21,12 @@ namespace OpenTK_002_WindowsForm
         float xWCS = 0;
         float yWCS = 0;
         bool userLine = false;
+        bool userLoopLine = false;
         bool userPoly = false;
         bool userPoint = false;
         bool userQuad = false;
+        bool userCircle = false;
+        List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
 
         public Form1()
@@ -97,7 +100,6 @@ namespace OpenTK_002_WindowsForm
             GL.LoadIdentity();
             GL.Translate(xWCS, yWCS, 0);
 
-            //ds.drawPrimList();
             ds.drawPrimList();
 
             if (!ds.busyDrawing())
@@ -161,20 +163,9 @@ namespace OpenTK_002_WindowsForm
             if (userPoint)
             {
                 point temp = new point(mouseDownLoc);
-                temp.glSize = 5;
+                temp.size = 5;
                 ds.Add(temp);
                 ds.useDrawProgress = true;  // continue showing the point as the mouse moves on screen
-            }
-            if (userQuad && (mouseUpLoc != new Point()) && (mouseDownLoc != new Point())) // down, up, down
-            {
-                quad temp = new quad(prevDownLoc, prevUpLoc, mouseDownLoc, mouseUpLoc);
-                ds.Add(temp);
-                ds.useDrawProgress = false;
-
-                prevDownLoc = mouseDownLoc;
-                mouseDownLoc = new Point();
-                mouseUpLoc = new Point();
-                
             }
         }
         
@@ -200,7 +191,26 @@ namespace OpenTK_002_WindowsForm
                 mouseDownLoc = new Point();
                 //mouseUpLoc = mouseDownLoc;
             }
-            
+            if (userQuad && (mouseDownLoc != new Point()))
+            {
+                quad temp = new quad(mouseDownLoc, mouseUpLoc);
+                ds.Add(temp);
+                ds.useDrawProgress = false;
+
+                prevDownLoc = mouseDownLoc;
+                mouseDownLoc = new Point();
+                mouseUpLoc = new Point();
+            }
+            if (userLoopLine && (mouseDownLoc != new Point()))
+            {
+                userPoints.Add(mouseDownLoc);
+                userPoints.Add(mouseUpLoc);
+
+                loopline temp = new loopline(userPoints);
+                ds.Add(temp);
+                ds.useDrawProgress = false;
+            }
+
             listBox1.Items.Clear();
             listBox1.Items.AddRange(ds.viewObjectList());
         }
@@ -224,17 +234,32 @@ namespace OpenTK_002_WindowsForm
             if (userPoint)
             {
                 point temp = new point(e.Location);
-                temp.glSize = 5;
+                temp.size = 5;
                 temp.propColor = Color.Azure;
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
             }
-            if (userQuad && (mouseUpLoc != new Point()) && (mouseDownLoc != new Point()) )
+            if (userQuad && (mouseDownLoc != new Point()))
             {
-                quad temp = new quad(mouseDownLoc, mouseUpLoc, e.Location, e.Location);
+                quad temp = new quad(mouseDownLoc, e.Location); // use the two point method
+                ds.setProgressObj(temp);
+                ds.useDrawProgress = true;
+                prevDownLoc = mouseDownLoc;
+            }
+            if (userLoopLine && (mouseDownLoc != new Point()) && (userPoints.Count() > 0))
+            {
+                userPoints.Add(e.Location);
+                loopline temp = new loopline(userPoints);
+                userPoints.RemoveAt(userPoints.Count() - 1);
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
             }
+
+            //Cursor.Position = new Point(30, 30);
+
+            //IntPtr idk = glControl1.Cursor.Handle;
+
+            //idk = idk + 1;
         }       
 
         private void glControl1_MouseHover(object sender, EventArgs e)
@@ -285,22 +310,74 @@ namespace OpenTK_002_WindowsForm
         }
 
         #region toolButtons
-        private void buttonLine_Click(object sender, EventArgs e)
+
+        private void deselectTools()
         {
-            userLine = true;
+            userLine = false;
+            userLoopLine = false;
             userPoly = false;
             userPoint = false;
             userQuad = false;
+            userCircle = false;
+        }
+
+        private void selectTool(string buttonText)
+        {
+            userLine = false;
+            userLoopLine = false;
+            userPoly = false;
+            userPoint = false;
+            userQuad = false;
+            userCircle = false;
+
+            switch (buttonText)
+            {
+                case "Line":
+                    userLine = true;
+                    break;
+                case "LoopLine":
+                    userLoopLine = true;
+                    break;
+                case "PolyLine":
+                    userPoly = true;
+                    break;
+                case "Point":
+                    userPoint = true;
+                    break;
+                case "Quad":
+                    userQuad = true;
+                    break;
+                case "Circle":
+                    userCircle = true;
+                    break;
+                default:
+                    userLine = false;
+                    userLoopLine = false;
+                    userPoly = false;
+                    userPoint = false;
+                    userQuad = false;
+                    userCircle = false;
+                    break;
+            }
+        }
+        
+        private void buttonLine_Click(object sender, EventArgs e)
+        {
+            selectTool(btnLine.Text.ToString());
+            mouseDownLoc = new Point();
+            mouseUpLoc = new Point();
+        }
+
+        private void buttonLoopLine_Click(object sender, EventArgs e)
+        {
+            selectTool(btnLoopLine.Text.ToString());
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
         }
 
         private void buttonPolyLine_Click(object sender, EventArgs e)
         {
-            userLine = false;
-            userPoly = true;
-            userPoint = false;
-            userQuad = false;
+            selectTool(btnPolyLine.Text.ToString());
             userPolyPts = new List<Point>();
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
@@ -308,29 +385,21 @@ namespace OpenTK_002_WindowsForm
 
         private void buttonPoint_Click(object sender, EventArgs e)
         {
-            userLine = false;
-            userPoly = false;
-            userPoint = true;
-            userQuad = false;
+            selectTool(btnPoint.Text.ToString());
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
         }
 
         private void buttonQuad_Click(object sender, EventArgs e)
         {
-            userLine = false;
-            userPoly = false;
-            userPoint = false;
-            userQuad = true;
+            selectTool(btnQuad.Text.ToString());
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
         }
 
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            userLine = false;
-            userPoly = false;
-            userPoint = false;
+            deselectTools();
             ds.deleteAll();
             listBox1.Items.Clear();
             listBox1.Items.AddRange(ds.viewObjectList());
@@ -339,21 +408,31 @@ namespace OpenTK_002_WindowsForm
         }
         #endregion
 
+        #region listBox Context Menu
+
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ds.removePrimByID( ds.getID( listBox1.SelectedItem.ToString()));
-
 
             listBox1.Items.Clear();
             listBox1.Items.AddRange(ds.viewObjectList());    
         }
 
+        private void showVerticiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // show the verticies of the objecet
+            glPrimitives selectedObj = ds.getPrimByID(ds.getID(listBox1.SelectedItem.ToString()));
+            selectedObj.getPrimitiveType();
 
+            //selectedObj.showVerts = true;
+        }
 
+        #endregion
 
-
-
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            deselectTools();
+        }
 
 
     }

@@ -39,61 +39,82 @@ namespace OpenTK_002_WindowsForm
 
         public void drawProgress()
         {
-            if (progressObj.getPrimitiveType() == "LINE")
-                drawLine(progressObj);
-            if (progressObj.getPrimitiveType() == "POINT")
-                drawPoint(progressObj);
-            if (progressObj.getPrimitiveType() == "QUAD")
-                drawQuad(progressObj);
+            drawObject(progressObj);
         }
 
         public void drawPrimList()
         {
             for (int i = 0; i < toDraw.Count; i++)
-            {
-                glPrimitives temp = toDraw[i];
-                string debugType = temp.getPrimitiveType();
-                switch (debugType)
-                {
-                    case "TRIANGLE":
-                        isDrawing = true;
-                        drawTriangle(temp);
-                        break;
-                    case "LINE":
-                        isDrawing = true;
-                        drawLine(temp);
-                        break;
-                    case "POINT":
-                        isDrawing = true;
-                        drawPoint(temp);
-                        break;
-                    case "POLYGON":
-                        isDrawing = true;
-                        drawPolygon(temp);
-                        break;
-                    case "QUAD":
-                        isDrawing = true;
-                        drawQuad(temp);
-                        break;
-                    default:
-                        isDrawing = false;
-                        break;
-                }
-                isDrawing = false;
-            }
+                drawObject(toDraw[i]);                
+            
             if (drawProgressObj)
                 drawProgress();
 
         }
 
+        public void drawObject(glPrimitives anyObject)
+        {
+            switch (anyObject.getPrimitiveType())
+            {
+                case "TRIANGLE":
+                    isDrawing = true;
+                    drawTriangle(anyObject);
+                    break;
+                case "LINE":
+                    isDrawing = true;
+                    drawLine(anyObject);
+                    break;
+                case "POINT":
+                    isDrawing = true;
+                    drawPoint(anyObject);
+                    break;
+                case "POLYGON":
+                    isDrawing = true;
+                    drawPolygon(anyObject);
+                    break;
+                case "QUAD":
+                    isDrawing = true;
+                    drawQuad(anyObject);
+                    break;
+                case "LOOPLINE":
+                    isDrawing = true;
+                    drawLoopLine(anyObject);
+                    break;
+                default:
+                    isDrawing = false;
+                    break;
+            }
+            isDrawing = false;
+        }
+        
+        #region drawing Methods
+
+        public void drawLoopLine(glPrimitives drawLoopLine)
+        {
+            loopline LOOPLINE = (loopline)drawLoopLine;
+            List<Point> geoData = drawLoopLine.getGeoData(); 
+            // If selected change to selected color
+            if (LOOPLINE.isSelected)
+                GL.Color3(LOOPLINE.selectedColor);
+            else
+                GL.Color3(LOOPLINE.propColor);
+            // Draw
+            GL.Begin(BeginMode.LineLoop);
+            
+            for( int i = 0; i < geoData.Count(); i++ )
+                GL.Vertex3(geoData[i].X, geoData[i].Y, 0);
+            GL.End();
+        }
+
         public void drawQuad(glPrimitives drawQuad)
         {
+            quad Quad = (quad)drawQuad;
             List<Point> geoData = drawQuad.getGeoData();
-            float size = drawQuad.glSize;
-            if (drawQuad.isSelected)
-                GL.Color3(drawQuad.selectedColor);
+
+            if (Quad.isSelected)
+                GL.Color3(Quad.selectedColor);
             else
-                GL.Color3(drawQuad.propColor);
+                GL.Color3(Quad.propColor);
             GL.Begin(BeginMode.Quads);
             GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
             GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
@@ -101,17 +122,31 @@ namespace OpenTK_002_WindowsForm
             GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
             
             GL.End();
+
+            if (Quad.showVerts)
+            {
+                GL.PointSize(5);
+                GL.Color3(Color.Orange);
+                GL.Begin(BeginMode.Points);
+                
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
         }
 
         public void drawPoint(glPrimitives drawPt)
         {
+            point Point = (point)drawPt;
             List<Point> geoData = drawPt.getGeoData();
-            float size = drawPt.glSize;
+            
             if (drawPt.isSelected)
                 GL.Color3(drawPt.selectedColor);
             else
                 GL.Color3(drawPt.propColor);
-            GL.PointSize(drawPt.glSize);
+            GL.PointSize(Point.size);
             GL.Begin(BeginMode.Points);
             GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
             GL.End();
@@ -135,6 +170,7 @@ namespace OpenTK_002_WindowsForm
 
         private void drawLine(glPrimitives drawLine)
         {
+            line Line = (line)drawLine;
             List<Point> geoData = drawLine.getGeoData();
             if (drawLine.isSelected)
                 GL.Color3(drawLine.selectedColor);
@@ -144,6 +180,18 @@ namespace OpenTK_002_WindowsForm
             GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
             GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
             GL.End();
+
+            if (Line.showVerts)
+            {
+                GL.PointSize(5);
+                GL.Color3(Color.Orange);
+                GL.Begin(BeginMode.Points);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+
+                GL.End();
+            }
         }
 
         private void drawPolygon(glPrimitives drawPoly)
@@ -161,6 +209,13 @@ namespace OpenTK_002_WindowsForm
             GL.End();
         }
 
+#endregion
+        
+        /// <summary>
+        /// Add a glPrimities object to the list data structure.
+        /// This list is drawn at Render()
+        /// </summary>
+        /// <param name="obj"></param>
         public void Add( glPrimitives obj )
         {
             id += 1;
@@ -168,6 +223,11 @@ namespace OpenTK_002_WindowsForm
             toDraw.Add(obj);
         }
 
+        /// <summary>
+        /// View the list of glPrimities that are drawn everytime
+        /// Render() is called as human readable descriptions.
+        /// </summary>
+        /// <returns></returns>
         public string[] viewObjectList()
         {
             List<string> result = new List<string>();
@@ -238,7 +298,6 @@ namespace OpenTK_002_WindowsForm
         {
             toDraw.Clear();
         }
-
 
         public void setProgressObj(glPrimitives obj)
         {

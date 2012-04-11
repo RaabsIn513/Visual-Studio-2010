@@ -13,6 +13,7 @@ namespace OpenTK_002_WindowsForm
 {
     class point : glPrimitives
     {
+        private static float _size = 1;
         public point(Point A)
         {
             List<Point> data = new List<Point>();
@@ -23,9 +24,12 @@ namespace OpenTK_002_WindowsForm
         {
             List<Point> data = new List<Point>();
             data.Add(A);
-            this.glSize = size;
             this.setData(data, "POINT");
         }
-        
+        public float size
+        {
+            get { return _size; }
+            set { _size = value; }
+        }
     }
 }

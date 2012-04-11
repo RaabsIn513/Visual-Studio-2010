@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="glPrimitives.cs" />
     <Compile Include="line.cs" />
+    <Compile Include="loopline.cs" />
     <Compile Include="objStack.cs" />
     <Compile Include="point.cs" />
     <Compile Include="polygon.cs" />
