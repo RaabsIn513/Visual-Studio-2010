@@ -28,6 +28,7 @@ namespace OpenTK_002_WindowsForm
         bool userCircle = false;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
+        private glPrimitiveDialog dia;
 
         public Form1()
         {
@@ -136,19 +137,7 @@ namespace OpenTK_002_WindowsForm
                 glControl1.Invalidate();
             }
         }
-
-        private void drawLine(float X1, float Y1, float X2, float Y2)
-        {
-            GL.Begin(BeginMode.Lines);
-
-            GL.Vertex3(X1, Y1, 0.0f);
-            GL.Vertex3(X2, Y2, 0.0f);
-
-            GL.End();
-
-            glControl1.SwapBuffers();
-        }
-
+        
         #region MouseData
  
         Point mouseDownLoc = new Point();
@@ -211,8 +200,11 @@ namespace OpenTK_002_WindowsForm
                 ds.useDrawProgress = false;
             }
 
-            listBox1.Items.Clear();
-            listBox1.Items.AddRange(ds.viewObjectList());
+            //listBox1.Items.Clear();
+            //listBox1.Items.AddRange(ds.viewObjectList());
+
+            listView1.Items.Clear();
+            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
         }
 
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
@@ -268,46 +260,27 @@ namespace OpenTK_002_WindowsForm
         }
                 
         #endregion
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int testSize = 0;
-            Point[] pts = new Point[3];
-            pts[0] = new Point(0 + testSize, 0);
-            pts[1] = new Point(100 + testSize, 0);
-            pts[2] = new Point(50 + testSize, 50);
-            triangle idk = new triangle(pts[0], pts[1], pts[2]);
-            line idk2 = new line(pts[2], new Point(400, 400));
-            idk.propColor = Color.Red;
-            idk2.propColor = Color.Green;
-
-            ds.Add(idk);
-            ds.Add(idk2);
-
-            listBox1.Items.Clear();
-            listBox1.Items.AddRange(ds.viewObjectList());       
-        }
         
-        private void listBox1_SelectedValueChanged(object sender, EventArgs e)
-        {
-            // change the color of the selected item
-            ds.deselectAll();
+        //private void listBox1_SelectedValueChanged(object sender, EventArgs e)
+        //{
+        //    // change the color of the selected item
+        //    ds.deselectAll();
 
-            int selID = ds.getID(listBox1.SelectedItem.ToString());
+        //    int selID = ds.getID(listBox1.SelectedItem.ToString());
 
-            //glPrimitives sel = ds.getPrimByID(selID);
-            ds.selectPrimByID(selID);
+        //    //glPrimitives sel = ds.getPrimByID(selID);
+        //    ds.selectPrimByID(selID);
                                     
-        }
+        //}
         
-        private void listBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right && (listBox1.SelectedItems.Count == 1))
-            {
-                Point pt = listBox1.PointToScreen(e.Location);
-                contextMenuStrip1.Show(pt);
-            }
-        }
+        //private void listBox1_MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    if (e.Button == MouseButtons.Right && (listBox1.SelectedItems.Count == 1))
+        //    {
+        //        Point pt = listBox1.PointToScreen(e.Location);
+        //        contextMenuStrip1.Show(pt);
+        //    }
+        //}
 
         #region toolButtons
 
@@ -401,39 +374,160 @@ namespace OpenTK_002_WindowsForm
         {
             deselectTools();
             ds.deleteAll();
-            listBox1.Items.Clear();
-            listBox1.Items.AddRange(ds.viewObjectList());
+            //listBox1.Items.Clear();
+            //listBox1.Items.AddRange(ds.viewObjectList());
+
+            listView1.Items.Clear();
+            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
         }
-        #endregion
-
-        #region listBox Context Menu
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ds.removePrimByID( ds.getID( listBox1.SelectedItem.ToString()));
-
-            listBox1.Items.Clear();
-            listBox1.Items.AddRange(ds.viewObjectList());    
-        }
-
-        private void showVerticiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // show the verticies of the objecet
-            glPrimitives selectedObj = ds.getPrimByID(ds.getID(listBox1.SelectedItem.ToString()));
-            selectedObj.getPrimitiveType();
-
-            //selectedObj.showVerts = true;
-        }
-
-        #endregion
 
         private void button2_Click(object sender, EventArgs e)
         {
             deselectTools();
         }
 
+        #endregion
+
+        #region listView Context Menu
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //ds.removePrimByID( ds.getID( listBox1.SelectedItem.ToString()));
+
+            //listBox1.Items.Clear();
+            //listBox1.Items.AddRange(ds.viewObjectList());
+            listView1.Items.Clear();
+            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
+
+        }
+
+        private void showVerticiesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // show the verticies of the objecet
+            //glPrimitives selectedObj = ds.getPrimByID(ds.getID(listBox1.SelectedItem.ToString()));
+            //selectedObj.getPrimitiveType();
+
+            //selectedObj.showVerts = true;
+        }
+
+        #endregion
+
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            // The Opening of the context menu strip. 
+            // We need to determine what options to give the user
+            // eg. Points: color, size options
+            //     Lines: color, width, point (show,size,color) etc
+            //MessageBox.Show(listBox1.SelectedItem.GetType().ToString());
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        //private void listView1_DoubleClick(object sender, EventArgs e)
+        //{
+        //    //MessageBox.Show("What's up");
+
+        //    ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+        //    if (selectedItem.Count == 1)
+        //    {
+        //        // Get the glPrimitive's ID and get the glPrimitive
+        //        string primID = selectedItem[0].SubItems[0].Text;
+        //        glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));
+        //        string type = selectedObj.GetType().ToString();
+        //        type = type.Substring( (type.IndexOf(".") + 1) );
+                
+        //        List<KeyValuePair<string, string>> loadOps = new List<KeyValuePair<string, string>>();
+        //        type = type.ToUpper();
+        //        switch (type)
+        //        {
+        //            case "TRIANGLE":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "TRIANGLE"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
+        //                selectedObj = (triangle)selectedObj;
+        //                break;
+        //            case "LINE":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "LINE"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
+        //                selectedObj = (line)selectedObj;
+        //                break;
+        //            case "POINT":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "POINT"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "FALSE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
+        //                break;
+        //            case "POLYGON":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "POLYGON"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
+        //                break;
+        //            case "QUAD":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "QUAD"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
+        //                break;
+        //            case "LOOPLINE":
+        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "LOOPLINE"));
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
+        //                break;
+        //            default:
+        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "FALSE"));
+        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
+
+        //                break;
+        //        }
+        //        // start dialog
+        //        glPrimitiveDialog dia = new glPrimitiveDialog(loadOps);
+        //        dia.StartPosition = FormStartPosition.CenterParent;
+        //        dia.ShowDialog(this);
+
+        //        List<KeyValuePair<string,string>> diaResult = dia.result;
+
+        //        // Process the dialog results...
+        //        if (getByKey(diaResult, "SHOW_VERTS").Value != null)
+        //        {
+        //            //(quad)selectedObj.showVerts = true;
+        //        }
+        //    }
+
+        //    //MessageBox.Show("ID: " + selectedItem[0].SubItems[0].Text + " TYPE: " + selectedItem[0].SubItems[1].Text + " COLOR: " + selectedItem[0].SubItems[2].Text);
+        //}
+        
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                // Get the glPrimitive's ID and get the glPrimitive
+                string primID = selectedItem[0].SubItems[0].Text;
+                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));
+                object passTo = (object)selectedObj;
+                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);
+                dia.ShowDialog(this);
+                //selectedObj = (glPrimitives)passTo;                
+                selectedObj = (glPrimitives)dia.getResult();
+            }
+        }
+
+        private KeyValuePair<string, string> getByKey(List<KeyValuePair<string, string>> kvlist, string Key)
+        {
+            for (int i = 0; i < kvlist.Count(); i++)
+            {
+                if (kvlist[i].Key == Key)
+                    return kvlist[i];
+            }
+            return new KeyValuePair<string, string>();
+        }
 
     }
 }

@@ -55,6 +55,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="glPrimitiveDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="glPrimitiveDialog.Designer.cs">
+      <DependentUpon>glPrimitiveDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="glPrimitives.cs" />
     <Compile Include="line.cs" />
     <Compile Include="loopline.cs" />
@@ -69,6 +75,9 @@
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="glPrimitiveDialog.resx">
+      <DependentUpon>glPrimitiveDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

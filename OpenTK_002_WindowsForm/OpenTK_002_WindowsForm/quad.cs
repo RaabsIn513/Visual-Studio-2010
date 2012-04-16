@@ -17,6 +17,7 @@ namespace OpenTK_002_WindowsForm
         private static float _width = 1;
         private static bool _showVerts = false;
         private static bool _showLines = false;
+        private static Color _lineColor = Color.Orange;
 
         public quad(Point A, Point B, Point C)
         {
@@ -72,6 +73,11 @@ namespace OpenTK_002_WindowsForm
         {
             get { return _width; }
             set { _width = value; }
+        }
+        public Color lineColor
+        {
+            get { return _lineColor; }
+            set { _lineColor = value; }
         }
         
     }

@@ -6,6 +6,7 @@ E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\bin\Debug\Op
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\bin\Debug\OpenTK.GLControl.xml
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\ResolveAssemblyReference.cache
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\OpenTK_002_WindowsForm.Form1.resources
+E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\OpenTK_002_WindowsForm.glPrimitiveDialog.resources
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\OpenTK_002_WindowsForm.Properties.Resources.resources
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\GenerateResource.read.1.tlog
 E:\Visual Studio 2010\OpenTK_002_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\GenerateResource.write.1.tlog

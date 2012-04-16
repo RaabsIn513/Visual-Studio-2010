@@ -39,13 +39,6 @@ namespace OpenTK_002_WindowsForm
             _type = type;
         }
 
-        public glPrimitives idk()
-        {
-            quad lol = new quad(new Point(0, 0), new Point(100, 100));
-
-            return lol;
-        }
-
         public bool isSelected
         {
             get { return select;  }
@@ -103,6 +96,31 @@ namespace OpenTK_002_WindowsForm
             {
                 _selectedColor = value;
             }
+        }
+
+        public triangle asTriangle()
+        {
+            return (triangle)this;
+        }
+
+        public line asLine(glPrimitives glPrim)
+        {
+            return (line)glPrim;
+        }
+
+        public point asPoint(glPrimitives glPrim)
+        {
+            return (point)glPrim;
+        }
+
+        public quad asQuad(glPrimitives glPrim)
+        {
+            return (quad)glPrim;
+        }
+
+        public loopline asLoopLine(glPrimitives glPrim)
+        {
+            return (loopline)glPrim;
         }
     }
 }

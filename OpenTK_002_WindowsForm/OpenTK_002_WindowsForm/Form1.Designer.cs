@@ -31,8 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.glControl1 = new OpenTK.GLControl();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnTest = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.btnLine = new System.Windows.Forms.Button();
             this.btnPolyLine = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
@@ -43,8 +41,11 @@
             this.showPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnLoopLine = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.ColumnHeader_ID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColumnHeaderType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColumnHeaderColor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,9 +56,10 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(112, 12);
+            this.glControl1.Cursor = System.Windows.Forms.Cursors.Cross;
+            this.glControl1.Location = new System.Drawing.Point(183, 12);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(828, 375);
+            this.glControl1.Size = new System.Drawing.Size(757, 375);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
@@ -80,31 +82,9 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "label1";
             // 
-            // btnTest
-            // 
-            this.btnTest.Location = new System.Drawing.Point(4, 41);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(19, 23);
-            this.btnTest.TabIndex = 4;
-            this.btnTest.Text = "Test";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // listBox1
-            // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 213);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(94, 173);
-            this.listBox1.TabIndex = 5;
-            this.listBox1.SelectedValueChanged += new System.EventHandler(this.listBox1_SelectedValueChanged);
-            this.listBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDown);
-            // 
             // btnLine
             // 
-            this.btnLine.Location = new System.Drawing.Point(29, 41);
+            this.btnLine.Location = new System.Drawing.Point(101, 36);
             this.btnLine.Name = "btnLine";
             this.btnLine.Size = new System.Drawing.Size(76, 23);
             this.btnLine.TabIndex = 6;
@@ -114,7 +94,7 @@
             // 
             // btnPolyLine
             // 
-            this.btnPolyLine.Location = new System.Drawing.Point(30, 99);
+            this.btnPolyLine.Location = new System.Drawing.Point(102, 94);
             this.btnPolyLine.Name = "btnPolyLine";
             this.btnPolyLine.Size = new System.Drawing.Size(75, 23);
             this.btnPolyLine.TabIndex = 7;
@@ -124,9 +104,9 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(31, 186);
+            this.btnClear.Location = new System.Drawing.Point(133, 181);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.Size = new System.Drawing.Size(44, 23);
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -134,7 +114,7 @@
             // 
             // btnPoint
             // 
-            this.btnPoint.Location = new System.Drawing.Point(31, 128);
+            this.btnPoint.Location = new System.Drawing.Point(102, 123);
             this.btnPoint.Name = "btnPoint";
             this.btnPoint.Size = new System.Drawing.Size(75, 23);
             this.btnPoint.TabIndex = 9;
@@ -144,7 +124,7 @@
             // 
             // btnQuad
             // 
-            this.btnQuad.Location = new System.Drawing.Point(30, 157);
+            this.btnQuad.Location = new System.Drawing.Point(102, 152);
             this.btnQuad.Name = "btnQuad";
             this.btnQuad.Size = new System.Drawing.Size(75, 23);
             this.btnQuad.TabIndex = 10;
@@ -160,6 +140,7 @@
             this.showLinesToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(152, 70);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
@@ -183,7 +164,7 @@
             // 
             // btnLoopLine
             // 
-            this.btnLoopLine.Location = new System.Drawing.Point(30, 70);
+            this.btnLoopLine.Location = new System.Drawing.Point(102, 65);
             this.btnLoopLine.Name = "btnLoopLine";
             this.btnLoopLine.Size = new System.Drawing.Size(75, 23);
             this.btnLoopLine.TabIndex = 11;
@@ -191,44 +172,65 @@
             this.btnLoopLine.UseVisualStyleBackColor = true;
             this.btnLoopLine.Click += new System.EventHandler(this.buttonLoopLine_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(29, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(4, 70);
+            this.button2.Location = new System.Drawing.Point(98, 181);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(20, 23);
+            this.button2.Size = new System.Drawing.Size(29, 23);
             this.button2.TabIndex = 13;
-            this.button2.Text = "button2";
+            this.button2.Text = "deselect";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // listView1
+            // 
+            this.listView1.AllowColumnReorder = true;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ColumnHeader_ID,
+            this.ColumnHeaderType,
+            this.ColumnHeaderColor});
+            this.listView1.FullRowSelect = true;
+            this.listView1.GridLines = true;
+            this.listView1.Location = new System.Drawing.Point(4, 210);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(173, 177);
+            this.listView1.TabIndex = 14;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
+            // 
+            // ColumnHeader_ID
+            // 
+            this.ColumnHeader_ID.Text = "ID";
+            this.ColumnHeader_ID.Width = 36;
+            // 
+            // ColumnHeaderType
+            // 
+            this.ColumnHeaderType.Text = "Type";
+            this.ColumnHeaderType.Width = 72;
+            // 
+            // ColumnHeaderColor
+            // 
+            this.ColumnHeaderColor.Text = "Color";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(952, 412);
-            this.Controls.Add(this.btnQuad);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.btnPolyLine);
-            this.Controls.Add(this.btnPoint);
-            this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.btnLoopLine);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnLine);
+            this.Controls.Add(this.btnClear);
+            this.Controls.Add(this.btnLoopLine);
+            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.btnPoint);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnQuad);
             this.Controls.Add(this.glControl1);
-            this.Controls.Add(this.btnTest);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.btnPolyLine);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -239,8 +241,6 @@
 
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnTest;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button btnLine;
         private System.Windows.Forms.Button btnPolyLine;
         private System.Windows.Forms.Button btnClear;
@@ -251,8 +251,11 @@
         private System.Windows.Forms.Button btnLoopLine;
         private System.Windows.Forms.ToolStripMenuItem showPointsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showLinesToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader ColumnHeader_ID;
+        private System.Windows.Forms.ColumnHeader ColumnHeaderType;
+        private System.Windows.Forms.ColumnHeader ColumnHeaderColor;
     }
 }
 

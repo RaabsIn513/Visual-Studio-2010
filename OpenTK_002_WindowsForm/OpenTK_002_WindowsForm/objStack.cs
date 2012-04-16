@@ -135,6 +135,19 @@ namespace OpenTK_002_WindowsForm
                 GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
                 GL.End();
             }
+
+            if (Quad.showLines)
+            {
+                GL.PointSize(5);
+                GL.Color3(Color.Red);
+                GL.Begin(BeginMode.LineLoop);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
         }
 
         public void drawPoint(glPrimitives drawPt)
@@ -239,6 +252,20 @@ namespace OpenTK_002_WindowsForm
             return result.ToArray();
         }
 
+        public List<ListViewItem> viewObjectListLVI()
+        {
+            List<ListViewItem> result = new List<ListViewItem>();
+
+            for (int i = 0; i < toDraw.Count; i++)
+            {
+                ListViewItem temp = new ListViewItem(toDraw[i].ID.ToString());
+                temp.SubItems.Add(toDraw[i].getPrimitiveType());
+                temp.SubItems.Add(toDraw[i].propColor.Name.ToString());
+                result.Add(temp);
+            }
+            return result;
+        }
+        
         public glPrimitives getPrimByID(int IDobj)
         {
             glPrimitives result = new glPrimitives();
