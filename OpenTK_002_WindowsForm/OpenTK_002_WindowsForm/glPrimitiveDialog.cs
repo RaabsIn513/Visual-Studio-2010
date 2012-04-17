@@ -57,24 +57,23 @@ namespace OpenTK_002_WindowsForm
 
         private void enableControls(bool SHOW_VERT_OP, bool SHOW_LINES_OP)
         {
-            checkBox_showVerts.Show();
-            checkBox_showLines.Show();
+            groupBox1.Show();
+            groupBox2.Show();
             if (SHOW_VERT_OP)
             {
-                checkBox_showVerts.Enabled = true;
-                
+                groupBox1.Enabled = true;
                 // TODO: find out the state of the SHOW_VERT for this _result object
             }
             else
-                checkBox_showVerts.Enabled = false;
+                groupBox1.Enabled = false;
 
             if (SHOW_LINES_OP)
             {
-                checkBox_showLines.Enabled = true;
+                groupBox2.Enabled = true;
                 // TODO: find out the state of the SHOW_VERT for this _result object
             }
             else
-                checkBox_showLines.Enabled = false;
+                groupBox2.Enabled = false;
 
         }
 
@@ -88,13 +87,21 @@ namespace OpenTK_002_WindowsForm
                 case "TRIANGLE":
                     _aTri = (triangle)input;
                     enableControls(true, true);
+                    
                     checkBox_showVerts.Checked = _aTri.showVerts;
+                    button_VertexColor.BackColor = _aTri.lineColor;
+                    UpDown_VertextSize.Text = _aTri.vertSize.ToString();
+                    
                     checkBox_showLines.Checked = _aTri.showLines;
+                    button_LineColor.BackColor = _aTri.lineColor;
+                    UpDown_LineWidth.Text = _aTri.lineWidth.ToString();
+
                     break;
                 case "LINE":
                     _aLine = (line)input;
                     enableControls(true, false);
                     checkBox_showVerts.Checked = _aLine.showVerts;
+                    UpDown_VertextSize.Text = _aLine.vertSize.ToString();
                     break;
                 case "POINT":
                     _aPoint = (point)input;
@@ -108,7 +115,14 @@ namespace OpenTK_002_WindowsForm
                     _aQuad = (quad)input;
                     enableControls(true, true);
                     checkBox_showVerts.Checked = _aQuad.showVerts;
+                    button_VertexColor.BackColor = _aQuad.lineColor;
+                    UpDown_VertextSize.Text = _aQuad.vertSize.ToString();
+
                     checkBox_showLines.Checked = _aQuad.showLines;
+                    button_LineColor.BackColor = _aQuad.lineColor;
+                    UpDown_LineWidth.Text = _aQuad.lineWidth.ToString();
+
+                    button_ObjectColor.BackColor = _aQuad.propColor;
                     break;
                 case "LOOPLINE":
                     _aLoopLine = (loopline)input;
@@ -137,12 +151,20 @@ namespace OpenTK_002_WindowsForm
                 case "TRIANGLE":
                     _aTri = (triangle)input;
                     _aTri.showVerts = checkBox_showVerts.Checked;
+                    _aTri.lineColor = button_VertexColor.BackColor;
+                    _aTri.vertSize = (float)Convert.ToDecimal(UpDown_VertextSize.Text.ToString());
+
                     _aTri.showLines = checkBox_showLines.Checked;
+                    _aTri.lineColor = button_LineColor.BackColor;
+                    _aTri.lineWidth = (float)Convert.ToDecimal(UpDown_LineWidth.Text.ToString());
                     output = _aTri;
                     break;
                 case "LINE":
                     _aLine = (line)input;
                     _aLine.showVerts = checkBox_showVerts.Checked;
+                    _aLine.propColor = button_ObjectColor.BackColor;
+                    _aLine.vertColor = button_VertexColor.BackColor;
+                    _aLine.vertSize = (float)Convert.ToDecimal(UpDown_VertextSize.Text.ToString());
                     output = _aLine;
                     break;
                 case "POINT":
@@ -156,7 +178,14 @@ namespace OpenTK_002_WindowsForm
                 case "QUAD":
                     _aQuad = (quad)input;
                     _aQuad.showVerts = checkBox_showVerts.Checked;
+                    _aQuad.lineColor = button_VertexColor.BackColor;
+                    _aQuad.vertSize = (float)Convert.ToDecimal(UpDown_VertextSize.Text.ToString());
+
                     _aQuad.showLines = checkBox_showLines.Checked;
+                    _aQuad.lineColor = button_LineColor.BackColor;
+                    _aQuad.lineWidth = (float)Convert.ToDecimal(UpDown_LineWidth.Text.ToString());
+
+                    _aQuad.propColor = button_ObjectColor.BackColor;
                     output = _aQuad;
                     break;
                 case "LOOPLINE":
@@ -185,5 +214,27 @@ namespace OpenTK_002_WindowsForm
         {
             return (object)output;
         }
+        
+        #region ColorButtons
+
+        private void button_VertexColor_Click(object sender, EventArgs e)
+        {
+            colorDialog1.ShowDialog(this);
+            button_VertexColor.BackColor = colorDialog1.Color;
+        }
+
+        private void button_LineColor_Click(object sender, EventArgs e)
+        {
+            colorDialog2.ShowDialog(this);
+            button_LineColor.BackColor = colorDialog2.Color;
+        }
+
+        private void button_ObjectColor_Click(object sender, EventArgs e)
+        {
+            colorDialog3.ShowDialog(this);
+            button_ObjectColor.BackColor = colorDialog3.Color;
+        }
+        
+#endregion
     }
 }

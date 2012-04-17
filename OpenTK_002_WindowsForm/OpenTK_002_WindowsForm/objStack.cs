@@ -16,6 +16,7 @@ namespace OpenTK_002_WindowsForm
     class objStack
     {
         public static List<glPrimitives> toDraw;
+        public static List<Point> rawPointData;
         public static glPrimitives progressObj;
         private static bool drawProgressObj = false;
         private static bool isDrawing = false;
@@ -50,6 +51,7 @@ namespace OpenTK_002_WindowsForm
             if (drawProgressObj)
                 drawProgress();
 
+            updatePointData();
         }
 
         public void drawObject(glPrimitives anyObject)
@@ -91,19 +93,46 @@ namespace OpenTK_002_WindowsForm
 
         public void drawLoopLine(glPrimitives drawLoopLine)
         {
-            loopline LOOPLINE = (loopline)drawLoopLine;
-            List<Point> geoData = drawLoopLine.getGeoData(); 
-            // If selected change to selected color
-            if (LOOPLINE.isSelected)
-                GL.Color3(LOOPLINE.selectedColor);
+            loopline LoopLine = (loopline)drawLoopLine;
+            List<Point> geoData = LoopLine.getGeoData();
+
+            if (LoopLine.isSelected)
+                GL.Color3(LoopLine.selectedColor);
             else
-                GL.Color3(LOOPLINE.propColor);
-            // Draw
-            GL.Begin(BeginMode.LineLoop);
-            
-            for( int i = 0; i < geoData.Count(); i++ )
-                GL.Vertex3(geoData[i].X, geoData[i].Y, 0);
+                GL.Color3(LoopLine.propColor);
+            GL.Begin(BeginMode.Quads);
+            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+            GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+            GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+            GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+
             GL.End();
+
+            if (LoopLine.showLines)
+            {
+                GL.LineWidth(LoopLine.lineWidth);
+                GL.Color3(LoopLine.lineColor);
+                GL.Begin(BeginMode.LineLoop);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
+
+            if (LoopLine.showVerts)
+            {
+                GL.PointSize(LoopLine.vertSize);
+                GL.Color3(LoopLine.vertColor);
+                GL.Begin(BeginMode.Points);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
         }
 
         public void drawQuad(glPrimitives drawQuad)
@@ -123,12 +152,12 @@ namespace OpenTK_002_WindowsForm
             
             GL.End();
 
-            if (Quad.showVerts)
+            if (Quad.showLines)
             {
-                GL.PointSize(5);
-                GL.Color3(Color.Orange);
-                GL.Begin(BeginMode.Points);
-                
+                GL.LineWidth(Quad.lineWidth);
+                GL.Color3(Quad.lineColor);
+                GL.Begin(BeginMode.LineLoop);
+
                 GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
                 GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
                 GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
@@ -136,11 +165,11 @@ namespace OpenTK_002_WindowsForm
                 GL.End();
             }
 
-            if (Quad.showLines)
+            if (Quad.showVerts)
             {
-                GL.PointSize(5);
-                GL.Color3(Color.Red);
-                GL.Begin(BeginMode.LineLoop);
+                GL.PointSize(Quad.vertSize);
+                GL.Color3(Quad.vertColor);
+                GL.Begin(BeginMode.Points);
 
                 GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
                 GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
@@ -168,9 +197,10 @@ namespace OpenTK_002_WindowsForm
         public void drawTriangle(glPrimitives drawTri)
         {
             // draw as a triangle
-            List<Point> geoData = drawTri.getGeoData();
-            if (drawTri.isSelected)
-                GL.Color3(drawTri.selectedColor);
+            triangle Tri = (triangle)drawTri;
+            List<Point> geoData = Tri.getGeoData();
+            if (Tri.isSelected)
+                GL.Color3(Tri.selectedColor);
             else
                 GL.Color3(drawTri.propColor); 
             GL.Begin(BeginMode.Triangles);
@@ -178,7 +208,32 @@ namespace OpenTK_002_WindowsForm
             GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
             GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
             GL.End();
-            
+
+            if (Tri.showLines)
+            {
+                GL.LineWidth(Tri.lineWidth);
+                GL.Color3(Tri.lineColor);
+                GL.Begin(BeginMode.LineLoop);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
+
+            if (Tri.showVerts)
+            {
+                GL.PointSize(Tri.vertSize);
+                GL.Color3(Tri.vertColor);
+                GL.Begin(BeginMode.Points);
+
+                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
+                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
+                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
+                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                GL.End();
+            }
         }
 
         private void drawLine(glPrimitives drawLine)
@@ -330,6 +385,65 @@ namespace OpenTK_002_WindowsForm
         {
             progressObj = new glPrimitives();
             progressObj = obj;
+        }
+
+        public void updatePointData()
+        {
+            rawPointData = new List<Point>();
+
+            for (int i = 0; i < toDraw.Count(); i++)
+            {
+                rawPointData.AddRange(toDraw[i].getGeoData());
+            }
+            Comparison<Point> idk;
+            idk.
+            rawPointData.Sort(); // sort for perforamnce?
+        }
+
+        public List<Point> allPointData()
+        {
+            return rawPointData;
+        }
+
+        //public Point getClosestPointWithInRadius(Point position, int radius)
+        //{
+        //    int index = 0;
+        //    int expanding = radius;
+        //    bool found = false;
+
+        //    while (expanding > 0)
+        //    {
+        //        index = rawPointData.BinarySearch(new Point(position.X + (radius - expanding), position.Y + (radius - expanding)));
+        //        expanding -= 1;
+        //        //return rawPointData[index];
+        //    }
+        //}
+
+        private double distance(Point A, Point B)
+        {
+            return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
+        }
+        
+        public Point getClosestPointWithInRadius(Point position, double radius)
+        {
+            int index = -1;
+            if (rawPointData != null)
+            {
+                for (int i = 0; i < rawPointData.Count(); i++)
+                {
+                    double dist = distance(position, rawPointData[i]);
+                    if (dist < radius)
+                    {
+                        radius = dist;
+                        index = i;
+                    }
+                }
+            }
+
+            if (index >= 0)
+                return rawPointData[index];
+            else
+                return position;
         }
     }
 }

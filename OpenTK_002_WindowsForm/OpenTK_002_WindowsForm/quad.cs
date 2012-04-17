@@ -13,11 +13,12 @@ namespace OpenTK_002_WindowsForm
 {
     class quad : glPrimitives
     {
-        private static float _size = 1;
-        private static float _width = 1;
-        private static bool _showVerts = false;
-        private static bool _showLines = false;
-        private static Color _lineColor = Color.Orange;
+        private float _vertSize = 1;
+        private float _lineWidth = 1;
+        private bool _showVerts = false;
+        private bool _showLines = false;
+        private Color _lineColor = Color.Orange;
+        private Color _vertColor = Color.Red;
 
         public quad(Point A, Point B, Point C)
         {
@@ -63,21 +64,28 @@ namespace OpenTK_002_WindowsForm
             set { _showLines = value; }
         }
 
-        public float size
+        public float vertSize
         {
-            get { return _size; }
-            set { _size = value; }
+            get { return _vertSize; }
+            set { _vertSize = value; }
         }
 
-        public float width
+        public float lineWidth
         {
-            get { return _width; }
-            set { _width = value; }
+            get { return _lineWidth; }
+            set { _lineWidth = value; }
         }
+
         public Color lineColor
         {
             get { return _lineColor; }
             set { _lineColor = value; }
+        }
+
+        public Color vertColor
+        {
+            get { return _vertColor; }
+            set { _vertColor = value; }
         }
         
     }

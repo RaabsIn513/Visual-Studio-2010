@@ -28,7 +28,6 @@ namespace OpenTK_002_WindowsForm
         bool userCircle = false;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
-        private glPrimitiveDialog dia;
 
         public Form1()
         {
@@ -206,9 +205,57 @@ namespace OpenTK_002_WindowsForm
             listView1.Items.Clear();
             listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
         }
+        
+        private Point withInRadius(Point centerPoint, float radius)
+        {
+            List<Point> pointL = ds.allPointData();
+            Point result = centerPoint;
+            double closestRad = new double();
+            closestRad = Math.Pow(radius, 2);
+            // Pick the closest one
+            if (ds.allPointData() != null)
+            {
+                for (int i = 0; i < pointL.Count(); i++)
+                {
+                    double testRad = Math.Pow(pointL[i].X - centerPoint.X, 2) + Math.Pow(pointL[i].Y - centerPoint.Y, 2);
 
+                    if (testRad < closestRad) // there is a point within the radius
+                    {
+                        closestRad = testRad;
+                        result = new Point(pointL[i].X, pointL[i].Y);
+                    }
+                }
+            }
+            return result;
+        }
+        
+        private Point vertTextSnap(Point currentPosition)
+        {
+            Point newLoc = withInRadius(currentPosition, 20);
+            if (newLoc != currentPosition )
+            {
+                return newLoc;
+            }
+            else
+                return currentPosition;
+        }
+        
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
+            // Vertext Snap?
+            
+            // TODO: Vertext Snap: move mouse to vertex if it is close enough to it. (with in radius detection)
+            if ( !userLine )
+            {
+                //Point idk = glControl1.PointToScreen(e.Location);
+                //Cursor.Position = new Point(idk.X + 5, idk.Y);
+
+                //Cursor.Position = glControl1.PointToScreen( vertTextSnap(e.Location) );
+                Cursor.Position = glControl1.PointToScreen(ds.getClosestPointWithInRadius(e.Location, 20));
+
+                //Thread.Sleep(1000);
+            }
+
             // show the line while the user is holding down the mouse button
             if (userLine && (mouseDownLoc != new Point()))
             {
@@ -509,13 +556,12 @@ namespace OpenTK_002_WindowsForm
             if (selectedItem.Count == 1)
             {
                 // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;
-                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));
-                object passTo = (object)selectedObj;
-                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);
-                dia.ShowDialog(this);
-                //selectedObj = (glPrimitives)passTo;                
-                selectedObj = (glPrimitives)dia.getResult();
+                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                object passTo = (object)selectedObj;                                    //Cast it as a C# object
+                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);                  //Pass it to a new instance of glPrimitiveDialog (C# can't pass custom classes between forms)
+                dia.ShowDialog(this);                                                   //ShowDialog (pauses here till user closes dialog)
+                selectedObj = (glPrimitives)dia.getResult();                            //Set the selected object to the result from the dialog
             }
         }
 

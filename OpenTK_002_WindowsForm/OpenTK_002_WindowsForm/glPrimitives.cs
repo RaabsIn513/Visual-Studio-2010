@@ -18,7 +18,6 @@ namespace OpenTK_002_WindowsForm
         private Color _color = Color.Black;
         private Color _selectedColor = Color.Fuchsia;
         private bool select = false;
-        private bool _showVerts = false;
 
         public glPrimitives()
         {
