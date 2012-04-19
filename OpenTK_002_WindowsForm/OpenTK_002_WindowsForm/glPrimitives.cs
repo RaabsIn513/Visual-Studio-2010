@@ -15,7 +15,7 @@ namespace OpenTK_002_WindowsForm
         private  List<Point> _points;
         private string _type = null;
         private int _ID;
-        private Color _color = Color.Black;
+        private Color _color = Color.BlanchedAlmond;
         private Color _selectedColor = Color.Fuchsia;
         private bool select = false;
 

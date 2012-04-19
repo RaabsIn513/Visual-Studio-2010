@@ -395,9 +395,6 @@ namespace OpenTK_002_WindowsForm
             {
                 rawPointData.AddRange(toDraw[i].getGeoData());
             }
-            Comparison<Point> idk;
-            idk.
-            rawPointData.Sort(); // sort for perforamnce?
         }
 
         public List<Point> allPointData()
@@ -423,27 +420,40 @@ namespace OpenTK_002_WindowsForm
         {
             return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
         }
-        
-        public Point getClosestPointWithInRadius(Point position, double radius)
+
+        public Point getNearestPoint(Point pos, double radius)
         {
-            int index = -1;
+            // Algorithm: 
+            List<Point> results = new List<Point>();
             if (rawPointData != null)
             {
-                for (int i = 0; i < rawPointData.Count(); i++)
+                results = new List<Point>(rawPointData.FindAll(
+                    delegate(Point pt)
+                    {
+                        return (Math.Pow(pos.X - pt.X,2) + Math.Pow( pos.Y - pt.Y, 2 ) < Math.Pow(radius, 2));
+                    }
+                    ));
+            }
+
+            if (results.Count() == 1)
+                return results[0];
+            else if (results.Count() > 1)
+            {
+                int i = 0;
+                Point result = new Point();
+                for (; i < results.Count(); i++)
                 {
-                    double dist = distance(position, rawPointData[i]);
+                    double dist = distance(pos, results[i]);
                     if (dist < radius)
                     {
                         radius = dist;
-                        index = i;
+                        result = results[i];
                     }
                 }
+                return result;
             }
-
-            if (index >= 0)
-                return rawPointData[index];
             else
-                return position;
+                return pos;
         }
     }
 }

@@ -26,8 +26,43 @@ namespace OpenTK_002_WindowsForm
         bool userPoint = false;
         bool userQuad = false;
         bool userCircle = false;
+        static int countdown = 10;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
+        AutoResetEvent autoEvent = new AutoResetEvent(false);
+        static System.Threading.TimerCallback tcb = new TimerCallback(ProcessTimerEvent);
+        static System.Threading.Timer timer;
+        
+        private static void ProcessTimerEvent (object obj)
+        {
+            --countdown;
+            // If countdown is complete, exit the program.
+            if (countdown == 0)
+            {
+                timer.Dispose ();
+                Environment.Exit (0);
+            }
+            string str = "";
+            // Cast the obj argument to clsTime.
+            if (obj is clsTime)
+            {
+                clsTime time = (clsTime) obj;
+                str = time.GetTimeString ();
+            }
+            str += "\r\nCountdown = " + countdown;
+            MessageBox.Show (str, "Timer Thread");
+        }
+
+        // Define a class to use as the object argument for the timer.
+        class clsTime
+        {
+            public string GetTimeString()
+            {
+                string str = DateTime.Now.ToString();
+                int index = str.IndexOf(" ");
+                return (str.Substring(index + 1));
+            }
+        }
 
         public Form1()
         {
@@ -38,7 +73,7 @@ namespace OpenTK_002_WindowsForm
         {
             loaded = true;
 
-            GL.ClearColor(Color.SlateGray);         // world background color
+            GL.ClearColor(Color.Black);         // world background color
 
 
             SetupViewport();
@@ -199,69 +234,36 @@ namespace OpenTK_002_WindowsForm
                 ds.useDrawProgress = false;
             }
 
-            //listBox1.Items.Clear();
-            //listBox1.Items.AddRange(ds.viewObjectList());
+            #region rightClickVertexSnap
+            //if (e.Button == MouseButtons.Right)
+            //{   // use vertex snap
+            //    deselectTools();
+                
+            //    Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
+            //    //Thread.Sleep(30);
+            //}
+            #endregion
 
             listView1.Items.Clear();
             listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
         }
-        
-        private Point withInRadius(Point centerPoint, float radius)
-        {
-            List<Point> pointL = ds.allPointData();
-            Point result = centerPoint;
-            double closestRad = new double();
-            closestRad = Math.Pow(radius, 2);
-            // Pick the closest one
-            if (ds.allPointData() != null)
-            {
-                for (int i = 0; i < pointL.Count(); i++)
-                {
-                    double testRad = Math.Pow(pointL[i].X - centerPoint.X, 2) + Math.Pow(pointL[i].Y - centerPoint.Y, 2);
 
-                    if (testRad < closestRad) // there is a point within the radius
-                    {
-                        closestRad = testRad;
-                        result = new Point(pointL[i].X, pointL[i].Y);
-                    }
-                }
-            }
-            return result;
-        }
-        
-        private Point vertTextSnap(Point currentPosition)
-        {
-            Point newLoc = withInRadius(currentPosition, 20);
-            if (newLoc != currentPosition )
-            {
-                return newLoc;
-            }
-            else
-                return currentPosition;
-        }
-        
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            // Vertext Snap?
-            
-            // TODO: Vertext Snap: move mouse to vertex if it is close enough to it. (with in radius detection)
-            if ( !userLine )
-            {
-                //Point idk = glControl1.PointToScreen(e.Location);
-                //Cursor.Position = new Point(idk.X + 5, idk.Y);
-
-                //Cursor.Position = glControl1.PointToScreen( vertTextSnap(e.Location) );
-                Cursor.Position = glControl1.PointToScreen(ds.getClosestPointWithInRadius(e.Location, 20));
-
-                //Thread.Sleep(1000);
-            }
-
+            //if()
+            //{
+                Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
+                tcb = new System.Threading.TimerCallback(ProcessTimerEvent);
+                clsTime     time = new clsTime();
+                timer = new System.Threading.Timer(tcb, time, 4000, 1000);
+            //}
             // show the line while the user is holding down the mouse button
             if (userLine && (mouseDownLoc != new Point()))
             {
                 line temp = new line(mouseDownLoc, e.Location);
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
+
             }
             if (userPoly && userPolyPts.Count > 0 && mouseDownLoc != new Point())
             {
@@ -293,12 +295,8 @@ namespace OpenTK_002_WindowsForm
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
             }
-
-            //Cursor.Position = new Point(30, 30);
-
-            //IntPtr idk = glControl1.Cursor.Handle;
-
-            //idk = idk + 1;
+            //Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
+            //Thread.Sleep(30);
         }       
 
         private void glControl1_MouseHover(object sender, EventArgs e)
@@ -339,6 +337,12 @@ namespace OpenTK_002_WindowsForm
             userPoint = false;
             userQuad = false;
             userCircle = false;
+        }
+
+        private string getSelectedTool()
+        {
+            
+            return "";
         }
 
         private void selectTool(string buttonText)
