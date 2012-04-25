@@ -26,47 +26,37 @@ namespace OpenTK_002_WindowsForm
         bool userPoint = false;
         bool userQuad = false;
         bool userCircle = false;
-        static int countdown = 10;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
-        AutoResetEvent autoEvent = new AutoResetEvent(false);
-        static System.Threading.TimerCallback tcb = new TimerCallback(ProcessTimerEvent);
-        static System.Threading.Timer timer;
+        MouseCoord mCo;
+        Thread MouseCoordThread;
+
+        private void OnWorkerProgressChanged(object sender, ProgressChangedArgs e)
+        {
+            //cross thread - so you don't get the cross theading exception
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke((MethodInvoker)delegate
+                {
+                    OnWorkerProgressChanged(sender, e);
+
+                });
+                return;
+            }
+
+            //change control
+            this.label2.Text = e.Progress;
+        }
         
-        private static void ProcessTimerEvent (object obj)
-        {
-            --countdown;
-            // If countdown is complete, exit the program.
-            if (countdown == 0)
-            {
-                timer.Dispose ();
-                Environment.Exit (0);
-            }
-            string str = "";
-            // Cast the obj argument to clsTime.
-            if (obj is clsTime)
-            {
-                clsTime time = (clsTime) obj;
-                str = time.GetTimeString ();
-            }
-            str += "\r\nCountdown = " + countdown;
-            MessageBox.Show (str, "Timer Thread");
-        }
-
-        // Define a class to use as the object argument for the timer.
-        class clsTime
-        {
-            public string GetTimeString()
-            {
-                string str = DateTime.Now.ToString();
-                int index = str.IndexOf(" ");
-                return (str.Substring(index + 1));
-            }
-        }
-
         public Form1()
         {
             InitializeComponent();
+
+            mCo = new MouseCoord();
+            mCo.ProgressChanged += new EventHandler<ProgressChangedArgs>(OnWorkerProgressChanged);
+            MouseCoordThread = new Thread(new ThreadStart(mCo.StartWork));
+
+            MouseCoordThread.Start();
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -75,9 +65,10 @@ namespace OpenTK_002_WindowsForm
 
             GL.ClearColor(Color.Black);         // world background color
 
-
             SetupViewport();
             Application.Idle += Application_Idle; // press TAB twice after +=
+
+            
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -125,6 +116,7 @@ namespace OpenTK_002_WindowsForm
             GL.LoadIdentity();
             GL.Ortho(0, w, h, 0, -1, 1); // Upper-left corner pixel has coordinate (0, 0)
             GL.Viewport(0, 0, w, h);     // Use all of the glControl painting area
+            
         }
 
         private void Render()
@@ -137,8 +129,10 @@ namespace OpenTK_002_WindowsForm
 
             ds.drawPrimList();
 
+            Axis.drawOrigin();
+
             if (!ds.busyDrawing())
-                glControl1.SwapBuffers();
+                glControl1.SwapBuffers();            
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -181,7 +175,8 @@ namespace OpenTK_002_WindowsForm
         private void glControl1_MouseDown(object sender, MouseEventArgs e)
         {   
             prevDownLoc = mouseDownLoc;
-            mouseDownLoc = e.Location;
+            Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
+            mouseDownLoc = actualGL_pos;
 
             if (userPoint)
             {
@@ -195,7 +190,8 @@ namespace OpenTK_002_WindowsForm
         private void glControl1_MouseUp(object sender, MouseEventArgs e)
         {
             prevUpLoc = mouseUpLoc;
-            mouseUpLoc = e.Location;
+            Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
+            mouseUpLoc = actualGL_pos;
             if (userLine)
             {
                 line temp = new line(mouseDownLoc, mouseUpLoc);
@@ -252,29 +248,33 @@ namespace OpenTK_002_WindowsForm
         {
             //if()
             //{
-                Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
-                tcb = new System.Threading.TimerCallback(ProcessTimerEvent);
-                clsTime     time = new clsTime();
-                timer = new System.Threading.Timer(tcb, time, 4000, 1000);
+            //    Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
+            //    tcb = new System.Threading.TimerCallback(ProcessTimerEvent);
+            //    clsTime     time = new clsTime();
+            //    timer = new System.Threading.Timer(tcb, time, 4000, 1000);
             //}
             // show the line while the user is holding down the mouse button
+            Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
+
+            label3.Text = "X: " + actualGL_pos.X.ToString() + " Y: " + actualGL_pos.Y.ToString();
+
             if (userLine && (mouseDownLoc != new Point()))
             {
-                line temp = new line(mouseDownLoc, e.Location);
+                line temp = new line(mouseDownLoc, actualGL_pos);
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
 
             }
             if (userPoly && userPolyPts.Count > 0 && mouseDownLoc != new Point())
             {
-                userPolyPts.Add(e.Location); // mouse current location
+                userPolyPts.Add(actualGL_pos); // mouse current location
                 polygon temp = new polygon(userPolyPts);
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
             }
             if (userPoint)
             {
-                point temp = new point(e.Location);
+                point temp = new point(actualGL_pos);
                 temp.size = 5;
                 temp.propColor = Color.Azure;
                 ds.setProgressObj(temp);
@@ -282,14 +282,14 @@ namespace OpenTK_002_WindowsForm
             }
             if (userQuad && (mouseDownLoc != new Point()))
             {
-                quad temp = new quad(mouseDownLoc, e.Location); // use the two point method
+                quad temp = new quad(mouseDownLoc, actualGL_pos ); // use the two point method
                 ds.setProgressObj(temp);
                 ds.useDrawProgress = true;
                 prevDownLoc = mouseDownLoc;
             }
             if (userLoopLine && (mouseDownLoc != new Point()) && (userPoints.Count() > 0))
             {
-                userPoints.Add(e.Location);
+                userPoints.Add(actualGL_pos);
                 loopline temp = new loopline(userPoints);
                 userPoints.RemoveAt(userPoints.Count() - 1);
                 ds.setProgressObj(temp);
@@ -306,27 +306,6 @@ namespace OpenTK_002_WindowsForm
                 
         #endregion
         
-        //private void listBox1_SelectedValueChanged(object sender, EventArgs e)
-        //{
-        //    // change the color of the selected item
-        //    ds.deselectAll();
-
-        //    int selID = ds.getID(listBox1.SelectedItem.ToString());
-
-        //    //glPrimitives sel = ds.getPrimByID(selID);
-        //    ds.selectPrimByID(selID);
-                                    
-        //}
-        
-        //private void listBox1_MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    if (e.Button == MouseButtons.Right && (listBox1.SelectedItems.Count == 1))
-        //    {
-        //        Point pt = listBox1.PointToScreen(e.Location);
-        //        contextMenuStrip1.Show(pt);
-        //    }
-        //}
-
         #region toolButtons
 
         private void deselectTools()
@@ -441,31 +420,6 @@ namespace OpenTK_002_WindowsForm
 
         #endregion
 
-        #region listView Context Menu
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //ds.removePrimByID( ds.getID( listBox1.SelectedItem.ToString()));
-
-            //listBox1.Items.Clear();
-            //listBox1.Items.AddRange(ds.viewObjectList());
-            listView1.Items.Clear();
-            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
-
-        }
-
-        private void showVerticiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // show the verticies of the objecet
-            //glPrimitives selectedObj = ds.getPrimByID(ds.getID(listBox1.SelectedItem.ToString()));
-            //selectedObj.getPrimitiveType();
-
-            //selectedObj.showVerts = true;
-        }
-
-        #endregion
-
-
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             // The Opening of the context menu strip. 
@@ -474,85 +428,7 @@ namespace OpenTK_002_WindowsForm
             //     Lines: color, width, point (show,size,color) etc
             //MessageBox.Show(listBox1.SelectedItem.GetType().ToString());
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        //private void listView1_DoubleClick(object sender, EventArgs e)
-        //{
-        //    //MessageBox.Show("What's up");
-
-        //    ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-
-        //    if (selectedItem.Count == 1)
-        //    {
-        //        // Get the glPrimitive's ID and get the glPrimitive
-        //        string primID = selectedItem[0].SubItems[0].Text;
-        //        glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));
-        //        string type = selectedObj.GetType().ToString();
-        //        type = type.Substring( (type.IndexOf(".") + 1) );
-                
-        //        List<KeyValuePair<string, string>> loadOps = new List<KeyValuePair<string, string>>();
-        //        type = type.ToUpper();
-        //        switch (type)
-        //        {
-        //            case "TRIANGLE":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "TRIANGLE"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
-        //                selectedObj = (triangle)selectedObj;
-        //                break;
-        //            case "LINE":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "LINE"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
-        //                selectedObj = (line)selectedObj;
-        //                break;
-        //            case "POINT":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "POINT"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "FALSE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
-        //                break;
-        //            case "POLYGON":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "POLYGON"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
-        //                break;
-        //            case "QUAD":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "QUAD"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
-        //                break;
-        //            case "LOOPLINE":
-        //                loadOps.Add(new KeyValuePair<string, string>("TYPE", "LOOPLINE"));
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "TRUE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "TRUE"));
-        //                break;
-        //            default:
-        //                loadOps.Add(new KeyValuePair<string,string>("SHOW_VERTS_OP", "FALSE"));
-        //                loadOps.Add(new KeyValuePair<string, string>("SHOW_LINES_OP", "FALSE"));
-
-        //                break;
-        //        }
-        //        // start dialog
-        //        glPrimitiveDialog dia = new glPrimitiveDialog(loadOps);
-        //        dia.StartPosition = FormStartPosition.CenterParent;
-        //        dia.ShowDialog(this);
-
-        //        List<KeyValuePair<string,string>> diaResult = dia.result;
-
-        //        // Process the dialog results...
-        //        if (getByKey(diaResult, "SHOW_VERTS").Value != null)
-        //        {
-        //            //(quad)selectedObj.showVerts = true;
-        //        }
-        //    }
-
-        //    //MessageBox.Show("ID: " + selectedItem[0].SubItems[0].Text + " TYPE: " + selectedItem[0].SubItems[1].Text + " COLOR: " + selectedItem[0].SubItems[2].Text);
-        //}
-        
+  
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
@@ -577,6 +453,76 @@ namespace OpenTK_002_WindowsForm
                     return kvlist[i];
             }
             return new KeyValuePair<string, string>();
+        }
+
+        private void button_FromFile_Click(object sender, EventArgs e)
+        {
+            System.IO.Stream myStream = null;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            loopline fileDraw;
+            List<Point> tempData = new List<Point>();
+
+            openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        using (myStream)
+                        {
+                            // Insert code to read the stream here.
+                            System.IO.StreamReader sr = new System.IO.StreamReader(myStream);
+                            
+                            string temp = null;
+                            while (!sr.EndOfStream)
+                            {
+                                temp = sr.ReadLine();
+                                if( temp.Contains(",") )
+                                {
+                                    int x = Convert.ToInt32(temp.Substring(0, temp.IndexOf(",") ));
+                                    int y = Convert.ToInt32(temp.Substring(temp.IndexOf(",") +1 ));
+                                    tempData.Add(new Point(x, y));
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+                fileDraw = new loopline(tempData);
+                ds.Add(fileDraw);
+            }
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selItems = listView1.SelectedItems;
+
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                ds.getPrimByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
+            }
+            
+            string showSelItems = null;
+            for (int i = 0; i < selItems.Count; i++)
+            {
+                showSelItems += selItems[i].SubItems[0].Text.ToString() + " : " + selItems[i].SubItems[1].Text.ToString() + "\n";
+
+                ds.getPrimByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            MouseCoordThread.Abort();
+            this.Dispose();
         }
 
     }

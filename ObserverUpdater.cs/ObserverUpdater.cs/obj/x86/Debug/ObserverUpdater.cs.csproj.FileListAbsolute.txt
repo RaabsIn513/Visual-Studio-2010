@@ -1,0 +1,9 @@
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\ObserverUpdater.cs.Form1.resources
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\ObserverUpdater.cs.Properties.Resources.resources
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\bin\Debug\ObserverUpdater.cs.exe
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\bin\Debug\ObserverUpdater.cs.pdb
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\ObserverUpdater.cs.exe
+E:\Visual Studio 2010\ObserverUpdater.cs\ObserverUpdater.cs\obj\x86\Debug\ObserverUpdater.cs.pdb

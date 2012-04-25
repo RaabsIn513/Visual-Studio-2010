@@ -46,6 +46,10 @@
             this.ColumnHeader_ID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeaderType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeaderColor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.button_FromFile = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,7 +80,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(425, 390);
+            this.label1.Location = new System.Drawing.Point(905, 390);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 2;
@@ -84,7 +88,7 @@
             // 
             // btnLine
             // 
-            this.btnLine.Location = new System.Drawing.Point(101, 36);
+            this.btnLine.Location = new System.Drawing.Point(101, 12);
             this.btnLine.Name = "btnLine";
             this.btnLine.Size = new System.Drawing.Size(76, 23);
             this.btnLine.TabIndex = 6;
@@ -94,7 +98,7 @@
             // 
             // btnPolyLine
             // 
-            this.btnPolyLine.Location = new System.Drawing.Point(102, 94);
+            this.btnPolyLine.Location = new System.Drawing.Point(102, 70);
             this.btnPolyLine.Name = "btnPolyLine";
             this.btnPolyLine.Size = new System.Drawing.Size(75, 23);
             this.btnPolyLine.TabIndex = 7;
@@ -104,9 +108,9 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(133, 181);
+            this.btnClear.Location = new System.Drawing.Point(137, 157);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(44, 23);
+            this.btnClear.Size = new System.Drawing.Size(40, 23);
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -114,7 +118,7 @@
             // 
             // btnPoint
             // 
-            this.btnPoint.Location = new System.Drawing.Point(102, 123);
+            this.btnPoint.Location = new System.Drawing.Point(102, 99);
             this.btnPoint.Name = "btnPoint";
             this.btnPoint.Size = new System.Drawing.Size(75, 23);
             this.btnPoint.TabIndex = 9;
@@ -124,7 +128,7 @@
             // 
             // btnQuad
             // 
-            this.btnQuad.Location = new System.Drawing.Point(102, 152);
+            this.btnQuad.Location = new System.Drawing.Point(102, 128);
             this.btnQuad.Name = "btnQuad";
             this.btnQuad.Size = new System.Drawing.Size(75, 23);
             this.btnQuad.TabIndex = 10;
@@ -139,32 +143,28 @@
             this.showPointsToolStripMenuItem,
             this.showLinesToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(152, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(130, 70);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.deleteToolStripMenuItem.Text = "delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             // 
             // showPointsToolStripMenuItem
             // 
             this.showPointsToolStripMenuItem.Name = "showPointsToolStripMenuItem";
-            this.showPointsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.showPointsToolStripMenuItem.Text = "show vertecies";
-            this.showPointsToolStripMenuItem.Click += new System.EventHandler(this.showVerticiesToolStripMenuItem_Click);
+            this.showPointsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             // 
             // showLinesToolStripMenuItem
             // 
             this.showLinesToolStripMenuItem.Name = "showLinesToolStripMenuItem";
-            this.showLinesToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.showLinesToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.showLinesToolStripMenuItem.Text = "show lines";
             // 
             // btnLoopLine
             // 
-            this.btnLoopLine.Location = new System.Drawing.Point(102, 65);
+            this.btnLoopLine.Location = new System.Drawing.Point(102, 41);
             this.btnLoopLine.Name = "btnLoopLine";
             this.btnLoopLine.Size = new System.Drawing.Size(75, 23);
             this.btnLoopLine.TabIndex = 11;
@@ -174,7 +174,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(98, 181);
+            this.button2.Location = new System.Drawing.Point(12, 99);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(29, 23);
             this.button2.TabIndex = 13;
@@ -197,6 +197,7 @@
             this.listView1.TabIndex = 14;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // ColumnHeader_ID
@@ -213,24 +214,63 @@
             // 
             this.ColumnHeaderColor.Text = "Color";
             // 
+            // button_FromFile
+            // 
+            this.button_FromFile.Location = new System.Drawing.Point(20, 12);
+            this.button_FromFile.Name = "button_FromFile";
+            this.button_FromFile.Size = new System.Drawing.Size(75, 23);
+            this.button_FromFile.TabIndex = 15;
+            this.button_FromFile.Text = "From File";
+            this.button_FromFile.UseVisualStyleBackColor = true;
+            this.button_FromFile.Click += new System.EventHandler(this.button_FromFile_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(180, 390);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "label2";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(531, 390);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "label3";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(952, 412);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.button_FromFile);
             this.Controls.Add(this.btnLine);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnLoopLine);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.btnPoint);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnQuad);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.btnPolyLine);
             this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Text = "Rob\'s OpenTK Drawing Program";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -256,6 +296,10 @@
         private System.Windows.Forms.ColumnHeader ColumnHeader_ID;
         private System.Windows.Forms.ColumnHeader ColumnHeaderType;
         private System.Windows.Forms.ColumnHeader ColumnHeaderColor;
+        private System.Windows.Forms.Button button_FromFile;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }
 

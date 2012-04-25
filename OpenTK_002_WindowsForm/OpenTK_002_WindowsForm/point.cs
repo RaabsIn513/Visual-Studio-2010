@@ -20,6 +20,14 @@ namespace OpenTK_002_WindowsForm
             data.Add(A);
             this.setData(data, "POINT");
         }
+
+        public point(float x, float y)
+        {
+            List<Point> data = new List<Point>();
+            data.Add( new Point( (int)x, (int)y ) );
+            this.setData(data, "POINT");
+        }
+
         public point(Point A, float size)
         {
             List<Point> data = new List<Point>();

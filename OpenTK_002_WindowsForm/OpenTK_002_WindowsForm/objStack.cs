@@ -100,12 +100,12 @@ namespace OpenTK_002_WindowsForm
                 GL.Color3(LoopLine.selectedColor);
             else
                 GL.Color3(LoopLine.propColor);
-            GL.Begin(BeginMode.Quads);
-            GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
-            GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
-            GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
-            GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
-
+            
+            GL.Begin(BeginMode.LineLoop);
+            for (int i = 0; i < geoData.Count(); i++)
+            {
+                GL.Vertex3(geoData[i].X, geoData[i].Y, 0);
+            }
             GL.End();
 
             if (LoopLine.showLines)
@@ -113,11 +113,10 @@ namespace OpenTK_002_WindowsForm
                 GL.LineWidth(LoopLine.lineWidth);
                 GL.Color3(LoopLine.lineColor);
                 GL.Begin(BeginMode.LineLoop);
-
-                GL.Vertex3(geoData[0].X, geoData[0].Y, 0);
-                GL.Vertex3(geoData[1].X, geoData[1].Y, 0);
-                GL.Vertex3(geoData[2].X, geoData[2].Y, 0);
-                GL.Vertex3(geoData[3].X, geoData[3].Y, 0);
+                for (int i = 0; i < geoData.Count(); i++)
+                {
+                    GL.Vertex3(geoData[i].X, geoData[i].Y, 0);
+                }
                 GL.End();
             }
 
