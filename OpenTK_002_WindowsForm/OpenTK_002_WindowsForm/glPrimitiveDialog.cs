@@ -52,6 +52,7 @@ namespace OpenTK_002_WindowsForm
         {
             input = (glPrimitives)glPrim;
             _Type = input.getPrimitiveType().ToUpper();
+
             InitializeComponent();
         }
 

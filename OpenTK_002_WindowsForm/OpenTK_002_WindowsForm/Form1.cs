@@ -11,6 +11,12 @@ using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 using System.Threading;
 
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Platform;
+using System.Drawing;
+
 namespace OpenTK_002_WindowsForm
 {
     public partial class Form1 : Form
@@ -20,6 +26,7 @@ namespace OpenTK_002_WindowsForm
         objStack ds = new objStack();
         float xWCS = 0;
         float yWCS = 0;
+        float zWCS = 0;
         bool userLine = false;
         bool userLoopLine = false;
         bool userPoly = false;
@@ -28,35 +35,13 @@ namespace OpenTK_002_WindowsForm
         bool userCircle = false;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
-        MouseCoord mCo;
-        Thread MouseCoordThread;
-
-        private void OnWorkerProgressChanged(object sender, ProgressChangedArgs e)
-        {
-            //cross thread - so you don't get the cross theading exception
-            if (this.InvokeRequired)
-            {
-                this.BeginInvoke((MethodInvoker)delegate
-                {
-                    OnWorkerProgressChanged(sender, e);
-
-                });
-                return;
-            }
-
-            //change control
-            this.label2.Text = e.Progress;
-        }
-        
+        Point actualGL_pos;
+                
         public Form1()
         {
             InitializeComponent();
 
-            mCo = new MouseCoord();
-            mCo.ProgressChanged += new EventHandler<ProgressChangedArgs>(OnWorkerProgressChanged);
-            MouseCoordThread = new Thread(new ThreadStart(mCo.StartWork));
-
-            MouseCoordThread.Start();
+            bgw_vertexSnap.WorkerReportsProgress = true;
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -114,20 +99,23 @@ namespace OpenTK_002_WindowsForm
             int h = glControl1.Height;
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(0, w, h, 0, -1, 1); // Upper-left corner pixel has coordinate (0, 0)
+            GL.Ortho(0, w, h, 0, 1, -1); // Upper-left corner pixel has coordinate (0, 0)
             GL.Viewport(0, 0, w, h);     // Use all of the glControl painting area
-            
+            //GL.Ortho(0, w, 0, h, 1, -1); 
+            //GL.Viewport(0, 0, w, h);                 
         }
 
         private void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            GL.Enable(EnableCap.DepthTest);
+            GL.ClearColor(Color.Moccasin);
+            
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            GL.Translate(xWCS, yWCS, 0);
-
-            ds.drawPrimList();
+            GL.Translate(xWCS, yWCS, zWCS);
+            
+            ds.drawPrimList(actualGL_pos);
 
             Axis.drawOrigin();
 
@@ -172,6 +160,7 @@ namespace OpenTK_002_WindowsForm
         Point mouseUpLoc = new Point();
         Point prevDownLoc = new Point();
         Point prevUpLoc = new Point();
+        
         private void glControl1_MouseDown(object sender, MouseEventArgs e)
         {   
             prevDownLoc = mouseDownLoc;
@@ -184,6 +173,10 @@ namespace OpenTK_002_WindowsForm
                 temp.size = 5;
                 ds.Add(temp);
                 ds.useDrawProgress = true;  // continue showing the point as the mouse moves on screen
+            }
+            if (ds.useMoveProgress)
+            {
+                ds.useMoveProgress = false;
             }
         }
         
@@ -230,80 +223,87 @@ namespace OpenTK_002_WindowsForm
                 ds.useDrawProgress = false;
             }
 
-            #region rightClickVertexSnap
-            //if (e.Button == MouseButtons.Right)
-            //{   // use vertex snap
-            //    deselectTools();
-                
-            //    Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
-            //    //Thread.Sleep(30);
-            //}
-            #endregion
-
             listView1.Items.Clear();
             listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
         }
 
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            //if()
-            //{
-            //    Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
-            //    tcb = new System.Threading.TimerCallback(ProcessTimerEvent);
-            //    clsTime     time = new clsTime();
-            //    timer = new System.Threading.Timer(tcb, time, 4000, 1000);
-            //}
-            // show the line while the user is holding down the mouse button
-            Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
-
+            actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
             label3.Text = "X: " + actualGL_pos.X.ToString() + " Y: " + actualGL_pos.Y.ToString();
 
-            if (userLine && (mouseDownLoc != new Point()))
+            if (ds.useMoveProgress)
+                Render();
+            else
             {
-                line temp = new line(mouseDownLoc, actualGL_pos);
-                ds.setProgressObj(temp);
-                ds.useDrawProgress = true;
+                if (cb_vertexSnap.Checked)
+                    if (!bgw_vertexSnap.IsBusy)
+                        bgw_vertexSnap.RunWorkerAsync(actualGL_pos);
 
+                if (userLine && (mouseDownLoc != new Point()))
+                {
+                    line temp = new line(mouseDownLoc, actualGL_pos);
+                    ds.setProgressObj(temp);
+                    ds.useDrawProgress = true;
+
+                }
+                if (userPoly && userPolyPts.Count > 0 && mouseDownLoc != new Point())
+                {
+                    userPolyPts.Add(actualGL_pos); // mouse current location
+                    polygon temp = new polygon(userPolyPts);
+                    ds.setProgressObj(temp);
+                    ds.useDrawProgress = true;
+                }
+                if (userPoint)
+                {
+                    point temp = new point(actualGL_pos);
+                    temp.size = 5;
+                    temp.propColor = Color.Azure;
+                    ds.setProgressObj(temp);
+                    ds.useDrawProgress = true;
+                }
+                if (userQuad && (mouseDownLoc != new Point()))
+                {
+                    quad temp = new quad(mouseDownLoc, actualGL_pos); // use the two point method
+                    ds.setProgressObj(temp);
+                    ds.useDrawProgress = true;
+                    prevDownLoc = mouseDownLoc;
+                }
+                if (userLoopLine && (mouseDownLoc != new Point()) && (userPoints.Count() > 0))
+                {
+                    userPoints.Add(actualGL_pos);
+                    loopline temp = new loopline(userPoints);
+                    userPoints.RemoveAt(userPoints.Count() - 1);
+                    ds.setProgressObj(temp);
+                    ds.useDrawProgress = true;
+                }
             }
-            if (userPoly && userPolyPts.Count > 0 && mouseDownLoc != new Point())
-            {
-                userPolyPts.Add(actualGL_pos); // mouse current location
-                polygon temp = new polygon(userPolyPts);
-                ds.setProgressObj(temp);
-                ds.useDrawProgress = true;
-            }
-            if (userPoint)
-            {
-                point temp = new point(actualGL_pos);
-                temp.size = 5;
-                temp.propColor = Color.Azure;
-                ds.setProgressObj(temp);
-                ds.useDrawProgress = true;
-            }
-            if (userQuad && (mouseDownLoc != new Point()))
-            {
-                quad temp = new quad(mouseDownLoc, actualGL_pos ); // use the two point method
-                ds.setProgressObj(temp);
-                ds.useDrawProgress = true;
-                prevDownLoc = mouseDownLoc;
-            }
-            if (userLoopLine && (mouseDownLoc != new Point()) && (userPoints.Count() > 0))
-            {
-                userPoints.Add(actualGL_pos);
-                loopline temp = new loopline(userPoints);
-                userPoints.RemoveAt(userPoints.Count() - 1);
-                ds.setProgressObj(temp);
-                ds.useDrawProgress = true;
-            }
-            //Cursor.Position = glControl1.PointToScreen(ds.getNearestPoint(e.Location, 25.0));
-            //Thread.Sleep(30);
-        }       
+        }
 
         private void glControl1_MouseHover(object sender, EventArgs e)
         {
-
+            if (!bgw_vertexSnap.IsBusy)
+            {
+                bgw_vertexSnap.RunWorkerAsync(actualGL_pos);
+            }
         }
-                
+
+
+        /// <summary>
+        /// Scroll to zoom. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void glControl1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+                zWCS += (float)0.5;
+            if (e.Delta < 0)
+                zWCS -= (float)0.5;
+
+            glControl1.Invalidate();
+        }
+
         #endregion
         
         #region toolButtons
@@ -420,41 +420,6 @@ namespace OpenTK_002_WindowsForm
 
         #endregion
 
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
-            // The Opening of the context menu strip. 
-            // We need to determine what options to give the user
-            // eg. Points: color, size options
-            //     Lines: color, width, point (show,size,color) etc
-            //MessageBox.Show(listBox1.SelectedItem.GetType().ToString());
-        }
-  
-        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-
-            if (selectedItem.Count == 1)
-            {
-                // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                object passTo = (object)selectedObj;                                    //Cast it as a C# object
-                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);                  //Pass it to a new instance of glPrimitiveDialog (C# can't pass custom classes between forms)
-                dia.ShowDialog(this);                                                   //ShowDialog (pauses here till user closes dialog)
-                selectedObj = (glPrimitives)dia.getResult();                            //Set the selected object to the result from the dialog
-            }
-        }
-
-        private KeyValuePair<string, string> getByKey(List<KeyValuePair<string, string>> kvlist, string Key)
-        {
-            for (int i = 0; i < kvlist.Count(); i++)
-            {
-                if (kvlist[i].Key == Key)
-                    return kvlist[i];
-            }
-            return new KeyValuePair<string, string>();
-        }
-
         private void button_FromFile_Click(object sender, EventArgs e)
         {
             System.IO.Stream myStream = null;
@@ -477,15 +442,15 @@ namespace OpenTK_002_WindowsForm
                         {
                             // Insert code to read the stream here.
                             System.IO.StreamReader sr = new System.IO.StreamReader(myStream);
-                            
+
                             string temp = null;
                             while (!sr.EndOfStream)
                             {
                                 temp = sr.ReadLine();
-                                if( temp.Contains(",") )
+                                if (temp.Contains(","))
                                 {
-                                    int x = Convert.ToInt32(temp.Substring(0, temp.IndexOf(",") ));
-                                    int y = Convert.ToInt32(temp.Substring(temp.IndexOf(",") +1 ));
+                                    int x = Convert.ToInt32(temp.Substring(0, temp.IndexOf(",")));
+                                    int y = Convert.ToInt32(temp.Substring(temp.IndexOf(",") + 1));
                                     tempData.Add(new Point(x, y));
                                 }
                             }
@@ -500,7 +465,165 @@ namespace OpenTK_002_WindowsForm
                 ds.Add(fileDraw);
             }
         }
+        
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Dispose();
+        }
 
+        private double distance(Point A, Point B)
+        {
+            return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
+        }
+
+        #region backgroundWorkers
+        
+        Point prev = new Point();
+        
+        private void bgw_vertexSnap_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Point pos = (Point)e.Argument;                  // Assume real gl point
+            Point snapTo = new Point();
+            List<Point> rawPointData = ds.allPointData();
+            double radius = 50;
+            if (prev == pos)
+            {
+                Thread.Sleep(50);
+                e.Result = new Point();
+            }
+            else
+            {// Algorithm: 
+                List<Point> results = new List<Point>();
+                if (rawPointData != null)
+                {
+                    results = new List<Point>(rawPointData.FindAll(
+                        delegate(Point pt)
+                        {
+                            return (Math.Pow(pos.X - pt.X, 2) + Math.Pow(pos.Y - pt.Y, 2) < Math.Pow(radius, 2));
+                        }
+                        ));
+                }
+                if (results.Count() == 1)
+                    snapTo = new Point(results[0].X, results[0].Y);
+                else if (results.Count() > 1)
+                {
+                    int i = 0;
+                    Point result = new Point();
+                    for (; i < results.Count(); i++)
+                    {
+                        double dist = distance(pos, results[i]);
+                        if (dist < radius)
+                        {
+                            radius = dist;
+                            result = results[i];
+                        }
+                    }
+                    snapTo = new Point(result.X, result.Y);
+                }
+                else
+                    snapTo = new Point();         // no points within range, send back nothing...  
+
+                e.Result = snapTo;
+            }
+            Thread.Sleep(150);
+            prev = pos;
+        }
+
+        private void bgw_vertexSnap_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Point result = new Point();
+            result = (Point)e.Result;
+
+            if (result != new Point())       // If there is a result, use it (vertex snap)
+                if (result != actualGL_pos)
+                    Cursor.Position = glControl1.PointToScreen(result);
+
+            Thread.Sleep(200);
+        }
+
+        #endregion
+
+        #region listViewActions 
+
+        private void listView1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(listView1.PointToScreen( e.Location ));
+            }
+        }
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                // Get the glPrimitive's ID and get the glPrimitive
+                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                object passTo = (object)selectedObj;                                    //Cast it as a C# object
+                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);                  //Pass it to a new instance of glPrimitiveDialog (C# can't pass custom classes between forms)
+                dia.ShowDialog(this);                                                   //ShowDialog (pauses here till user closes dialog)
+                selectedObj = (glPrimitives)dia.getResult();                            //Set the selected object to the result from the dialog
+            }
+        }
+        
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                // Get the glPrimitive's ID and get the glPrimitive
+                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                ds.deleteByID(Convert.ToInt32(primID));
+            }
+            refreshListView1();
+        }
+
+        private void moveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+            
+            if (selectedItem.Count == 1)
+            {
+                // Get the glPrimitive's ID and get the glPrimitive
+                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
+                deselectTools();
+                ds.setMoveProgressObj(selectedObj);
+                ds.useMoveProgress = true;
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                // Get the glPrimitive's ID and get the glPrimitive
+                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
+                deselectTools();
+                glPrimitives copy = new glPrimitives(selectedObj.getGeoData(), selectedObj.getPrimitiveType());
+                ds.setMoveProgressObj(copy);
+                ds.useMoveProgress = true;
+            }
+        }
+        
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            // The Opening of the context menu strip. 
+            // We need to determine what options to give the user
+            // eg. Points: color, size options
+            //     Lines: color, width, point (show,size,color) etc
+
+        }
+        
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListView.SelectedListViewItemCollection selItems = listView1.SelectedItems;
@@ -509,7 +632,7 @@ namespace OpenTK_002_WindowsForm
             {
                 ds.getPrimByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
             }
-            
+
             string showSelItems = null;
             for (int i = 0; i < selItems.Count; i++)
             {
@@ -519,11 +642,12 @@ namespace OpenTK_002_WindowsForm
             }
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        public void refreshListView1()
         {
-            MouseCoordThread.Abort();
-            this.Dispose();
+            listView1.Items.Clear();
+            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
         }
+        #endregion
 
     }
 }

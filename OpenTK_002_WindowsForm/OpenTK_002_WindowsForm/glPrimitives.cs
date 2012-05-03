@@ -47,6 +47,17 @@ namespace OpenTK_002_WindowsForm
             }
         }
 
+        public bool isLine
+        {
+            get
+            {
+                if (this.getPrimitiveType().ToUpper() == "LINE")
+                    return true;
+                else
+                    return false;
+            }
+        }
+
         public string getPrimitiveType()
         {
             return _type;

@@ -18,7 +18,9 @@ namespace OpenTK_002_WindowsForm
         public static List<glPrimitives> toDraw;
         public static List<Point> rawPointData;
         public static glPrimitives progressObj;
+        public static glPrimitives moveProgressObj;
         private static bool drawProgressObj = false;
+        private static bool useMoveProgressObj = false;
         private static bool isDrawing = false;
         private static int id = 100;
         public objStack()
@@ -38,18 +40,42 @@ namespace OpenTK_002_WindowsForm
             set { drawProgressObj = value;}
         }
 
+        public bool useMoveProgress
+        {
+            get { return useMoveProgressObj; }
+            set { useMoveProgressObj = value; }
+        }
+
         public void drawProgress()
         {
             drawObject(progressObj);
         }
 
-        public void drawPrimList()
+        public void drawMovingProgress(Point location)
+        {
+            int numPts = moveProgressObj.getGeoData().Count();
+            List<Point> data = moveProgressObj.getGeoData();
+            Point origPt = data[0];
+            Point newPt = new Point( location.X - origPt.X, location.Y - origPt.Y );
+
+            for (int i = 0; i < numPts; i++)
+                data[i] = new Point(data[i].X + (newPt.X), data[i].Y + (newPt.Y));          
+
+            moveProgressObj.setData(data, moveProgressObj.getPrimitiveType());
+
+            drawObject(moveProgressObj);
+        }
+
+        public void drawPrimList(Point interest)
         {
             for (int i = 0; i < toDraw.Count; i++)
                 drawObject(toDraw[i]);                
             
             if (drawProgressObj)
                 drawProgress();
+
+            if (useMoveProgress)
+                drawMovingProgress(interest);
 
             updatePointData();
         }
@@ -346,7 +372,7 @@ namespace OpenTK_002_WindowsForm
                 toDraw[i].isSelected = false;
         }
 
-        public void removePrimByID(int IDobj)
+        public void deleteByID(int IDobj)
         {
             for (int i = 0; i < toDraw.Count; i++)
             {
@@ -386,6 +412,11 @@ namespace OpenTK_002_WindowsForm
             progressObj = obj;
         }
 
+        public void setMoveProgressObj(glPrimitives obj)
+        {
+            moveProgressObj = obj;
+        }
+        
         public void updatePointData()
         {
             rawPointData = new List<Point>();
@@ -401,58 +432,9 @@ namespace OpenTK_002_WindowsForm
             return rawPointData;
         }
 
-        //public Point getClosestPointWithInRadius(Point position, int radius)
-        //{
-        //    int index = 0;
-        //    int expanding = radius;
-        //    bool found = false;
-
-        //    while (expanding > 0)
-        //    {
-        //        index = rawPointData.BinarySearch(new Point(position.X + (radius - expanding), position.Y + (radius - expanding)));
-        //        expanding -= 1;
-        //        //return rawPointData[index];
-        //    }
-        //}
-
         private double distance(Point A, Point B)
         {
             return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
-        }
-
-        public Point getNearestPoint(Point pos, double radius)
-        {
-            // Algorithm: 
-            List<Point> results = new List<Point>();
-            if (rawPointData != null)
-            {
-                results = new List<Point>(rawPointData.FindAll(
-                    delegate(Point pt)
-                    {
-                        return (Math.Pow(pos.X - pt.X,2) + Math.Pow( pos.Y - pt.Y, 2 ) < Math.Pow(radius, 2));
-                    }
-                    ));
-            }
-
-            if (results.Count() == 1)
-                return results[0];
-            else if (results.Count() > 1)
-            {
-                int i = 0;
-                Point result = new Point();
-                for (; i < results.Count(); i++)
-                {
-                    double dist = distance(pos, results[i]);
-                    if (dist < radius)
-                    {
-                        radius = dist;
-                        result = results[i];
-                    }
-                }
-                return result;
-            }
-            else
-                return pos;
         }
     }
 }

@@ -38,8 +38,6 @@
             this.btnQuad = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showLinesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnLoopLine = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
@@ -48,8 +46,12 @@
             this.ColumnHeaderColor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.button_FromFile = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.bgw_vertexSnap = new System.ComponentModel.BackgroundWorker();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cb_vertexSnap = new System.Windows.Forms.CheckBox();
+            this.moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,6 +69,8 @@
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+            //this.glControl1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.glControl1_Scroll);
+            this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseWheel);
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl1_KeyDown);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
@@ -140,27 +144,18 @@
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem,
-            this.showPointsToolStripMenuItem,
-            this.showLinesToolStripMenuItem});
+            this.moveToolStripMenuItem,
+            this.copyToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(130, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 92);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            // 
-            // showPointsToolStripMenuItem
-            // 
-            this.showPointsToolStripMenuItem.Name = "showPointsToolStripMenuItem";
-            this.showPointsToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            // 
-            // showLinesToolStripMenuItem
-            // 
-            this.showLinesToolStripMenuItem.Name = "showLinesToolStripMenuItem";
-            this.showLinesToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            this.showLinesToolStripMenuItem.Text = "show lines";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Text = "delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // btnLoopLine
             // 
@@ -198,6 +193,7 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // ColumnHeader_ID
@@ -228,37 +224,66 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(180, 390);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 16;
-            this.label2.Text = "label2";
-            // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(531, 390);
+            this.label3.Location = new System.Drawing.Point(180, 390);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 17;
             this.label3.Text = "label3";
+            // 
+            // bgw_vertexSnap
+            // 
+            this.bgw_vertexSnap.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgw_vertexSnap_DoWork);
+            this.bgw_vertexSnap.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgw_vertexSnap_RunWorkerCompleted);
+            // 
+            // label2
+            // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(869, 390);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(30, 13);
+            this.label2.TabIndex = 18;
+            this.label2.Text = "FPS:";
+            // 
+            // cb_vertexSnap
+            // 
+            this.cb_vertexSnap.AutoSize = true;
+            this.cb_vertexSnap.Location = new System.Drawing.Point(4, 187);
+            this.cb_vertexSnap.Name = "cb_vertexSnap";
+            this.cb_vertexSnap.Size = new System.Drawing.Size(81, 17);
+            this.cb_vertexSnap.TabIndex = 19;
+            this.cb_vertexSnap.Text = "vertex snap";
+            this.cb_vertexSnap.UseVisualStyleBackColor = true;
+            // 
+            // moveToolStripMenuItem
+            // 
+            this.moveToolStripMenuItem.Name = "moveToolStripMenuItem";
+            this.moveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moveToolStripMenuItem.Text = "move";
+            this.moveToolStripMenuItem.Click += new System.EventHandler(this.moveToolStripMenuItem_Click);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyToolStripMenuItem.Text = "copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(952, 412);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.cb_vertexSnap);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button_FromFile);
             this.Controls.Add(this.btnLine);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnLoopLine);
             this.Controls.Add(this.listView1);
@@ -289,8 +314,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Button btnLoopLine;
-        private System.Windows.Forms.ToolStripMenuItem showPointsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showLinesToolStripMenuItem;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader ColumnHeader_ID;
@@ -298,8 +321,12 @@
         private System.Windows.Forms.ColumnHeader ColumnHeaderColor;
         private System.Windows.Forms.Button button_FromFile;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.ComponentModel.BackgroundWorker bgw_vertexSnap;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox cb_vertexSnap;
+        private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
     }
 }
 

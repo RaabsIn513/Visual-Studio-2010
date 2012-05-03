@@ -13,9 +13,9 @@ namespace OpenTK_002_WindowsForm
 {
     class line : glPrimitives
     {
-        private float _vertSize = 1;
         private float _lineWidth = 1;
         private bool _showVerts = false;
+        private float _vertSize = 1;
         private Color _vertColor = Color.Red;
 
         public line(Point A, Point B)
@@ -51,5 +51,20 @@ namespace OpenTK_002_WindowsForm
             set { _lineWidth = value; }
         }
 
+        public void setProperties(float lineWidth, bool showVertices, float vertSize, Color vertColor)
+        {
+            if (lineWidth > 0)
+                _lineWidth = lineWidth;
+            else
+                _lineWidth = 1;
+
+            _showVerts = showVertices;
+            if (vertSize > 0)
+                _vertSize = vertSize;
+            else
+                _vertSize = 1;
+                        
+            _vertColor = vertColor;
+        }
     }
 }
