@@ -1,0 +1,13 @@
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\GameLoopForm.exe
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\GameLoopForm.pdb
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\OpenTK.dll
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\OpenTK.GLControl.dll
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\OpenTK.xml
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\bin\Debug\OpenTK.GLControl.xml
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GameLoopForm.Form1.resources
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GameLoopForm.Properties.Resources.resources
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GameLoopForm.exe
+E:\Visual Studio 2010\GameLoopForm\GameLoopForm\obj\x86\Debug\GameLoopForm.pdb

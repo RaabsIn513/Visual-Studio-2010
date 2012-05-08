@@ -36,6 +36,7 @@ namespace OpenTK_002_WindowsForm
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
         Point actualGL_pos;
+        static float angle = 0;
                 
         public Form1()
         {
@@ -114,7 +115,7 @@ namespace OpenTK_002_WindowsForm
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             GL.Translate(xWCS, yWCS, zWCS);
-            
+
             ds.drawPrimList(actualGL_pos);
 
             Axis.drawOrigin();
@@ -223,8 +224,7 @@ namespace OpenTK_002_WindowsForm
                 ds.useDrawProgress = false;
             }
 
-            listView1.Items.Clear();
-            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
+            refreshListView1();
         }
 
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
@@ -407,8 +407,7 @@ namespace OpenTK_002_WindowsForm
             //listBox1.Items.Clear();
             //listBox1.Items.AddRange(ds.viewObjectList());
 
-            listView1.Items.Clear();
-            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
+            refreshListView1();
             mouseDownLoc = new Point();
             mouseUpLoc = new Point();
         }
@@ -566,6 +565,7 @@ namespace OpenTK_002_WindowsForm
                 glPrimitiveDialog dia = new glPrimitiveDialog(passTo);                  //Pass it to a new instance of glPrimitiveDialog (C# can't pass custom classes between forms)
                 dia.ShowDialog(this);                                                   //ShowDialog (pauses here till user closes dialog)
                 selectedObj = (glPrimitives)dia.getResult();                            //Set the selected object to the result from the dialog
+                refreshListView1();
             }
         }
         
@@ -646,8 +646,17 @@ namespace OpenTK_002_WindowsForm
         {
             listView1.Items.Clear();
             listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
+            for (int i = 0; i < listView1.Items.Count; i++)
+                listView1.Items[i].BackColor = ds.getByIndex(i).propColor;
         }
         #endregion
+
+        private void btn_VBOtest_Click(object sender, EventArgs e)
+        {
+            int idk;
+            GL.GenBuffers(1, out idk); 
+            //.BindBuffer(
+        }
 
     }
 }
