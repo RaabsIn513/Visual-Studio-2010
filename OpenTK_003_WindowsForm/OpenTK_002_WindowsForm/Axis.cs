@@ -18,11 +18,14 @@ namespace OpenTK_002_WindowsForm
         //public Axis()
         //{
         //}
+        public static float width = (float)2.0;
+        public static Color xAxis = Color.Red;
+        public static Color yAxis = Color.Green;
+        public static Color zAxis = Color.Blue;
 
         public static void drawXaxis(int dist)
         {
-            float width = (float)2.0;
-            GL.Color3(Color.Blue);
+            GL.Color3(xAxis);
             GL.LineWidth(width);
 
             GL.Begin(BeginMode.Lines);
@@ -34,8 +37,7 @@ namespace OpenTK_002_WindowsForm
         }
         public static void drawYaxis(int dist)
         {
-            float width = (float)2.0;
-            GL.Color3(Color.Red);
+            GL.Color3(yAxis);
             GL.LineWidth(width);
 
             GL.Begin(BeginMode.Lines);
@@ -47,8 +49,7 @@ namespace OpenTK_002_WindowsForm
         }
         public static void drawZaxis(int dist)
         {
-            float width = (float)2.0;
-            GL.Color3(Color.Green);
+            GL.Color3(zAxis);
             GL.LineWidth(width);
 
             GL.Begin(BeginMode.Lines);
@@ -64,7 +65,6 @@ namespace OpenTK_002_WindowsForm
             drawXaxis(500);
             drawYaxis(500);
             drawZaxis(500);
-            GL.End();
         }
 
     }

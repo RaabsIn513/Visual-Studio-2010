@@ -10,7 +10,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 using System.Threading;
-
+using System.Security.Cryptography;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -40,17 +40,19 @@ namespace OpenTK_002_WindowsForm
         static float angleY = 0;
         static float angleZ = 0;
         static float magnitude = 0;
-
-        static bool pan = false;
-        static bool rotate = false;
         static bool shftKey_state = false;
         static tools userTools;
+        byte[] b = new byte[3];
+        RandomNumberGenerator rndGen = System.Security.Cryptography.RandomNumberGenerator.Create();
+        
         
         public Form1()
         {
             InitializeComponent();
 
             bgw_vertexSnap.WorkerReportsProgress = true;
+
+            rndGen.GetBytes(b);
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -143,9 +145,53 @@ namespace OpenTK_002_WindowsForm
 
             //ds.drawPrimList(actualGL_pos);
 
-            //Axis.drawOrigin();
+            Axis.width = (float)1.0;
+            Axis.drawOrigin();
 
             DrawCube();
+
+            VertexBuffer vbo = new VertexBuffer();
+            Vertex[] data = new Vertex[24];
+            
+            data[0].Position = new Vector3(-1.0f, -1.0f, -1.0f);
+            data[1].Position = new Vector3(-1.0f, 1.0f, -1.0f);
+            data[2].Position = new Vector3(1.0f, 1.0f, -1.0f);
+            data[3].Position = new Vector3(1.0f, -1.0f, -1.0f);
+            data[4].Position = new Vector3(-1.0f, -1.0f, -1.0f);
+            data[5].Position = new Vector3(1.0f, -1.0f, -1.0f);
+            data[6].Position = new Vector3(1.0f, -1.0f, 1.0f);
+            data[7].Position = new Vector3(-1.0f, -1.0f, 1.0f);
+            data[8].Position = new Vector3(-1.0f, -1.0f, -1.0f);
+            data[9].Position = new Vector3(-1.0f, -1.0f, 1.0f);
+            data[10].Position = new Vector3(-1.0f, 1.0f, 1.0f);
+            data[11].Position = new Vector3(-1.0f, 1.0f, -1.0f);
+            data[12].Position = new Vector3(-1.0f, -1.0f, 1.0f);
+            data[13].Position = new Vector3(1.0f, -1.0f, 1.0f);
+            data[14].Position = new Vector3(1.0f, 1.0f, 1.0f);
+            data[15].Position = new Vector3(-1.0f, 1.0f, 1.0f);
+            data[16].Position = new Vector3(-1.0f, 1.0f, -1.0f);
+            data[17].Position = new Vector3(-1.0f, 1.0f, 1.0f);
+            data[18].Position = new Vector3(1.0f, 1.0f, 1.0f);
+            data[19].Position = new Vector3(1.0f, 1.0f, -1.0f);
+            data[20].Position = new Vector3(1.0f, -1.0f, -1.0f);
+            data[21].Position = new Vector3(1.0f, 1.0f, -1.0f);
+            data[22].Position = new Vector3(1.0f, 1.0f, 1.0f);
+            data[23].Position = new Vector3(1.0f, -1.0f, 1.0f);
+            
+            for (int i = 0; i < data.Length; i++)
+            {
+                //GL.Color3(Color.FromArgb(i, i*2, 255-i));
+                GL.Color3(Color.FromArgb(b[0], b[1], b[2]));
+                
+                data[i].Position.Add(new Vector3(0.5f, 0.5f, 0.5f));
+                data[i].Normal = Vector3.UnitX;
+                data[i].TexCoord.X = 0.5f;
+                data[i].TexCoord.Y = 1.0f;
+            }
+
+            vbo.SetData(data);
+
+            vbo.Render();
 
             if (!ds.busyDrawing())
                 glControl1.SwapBuffers();            
@@ -748,7 +794,7 @@ namespace OpenTK_002_WindowsForm
         {
             GL.Begin(BeginMode.Quads);
 
-            GL.Color3(Color.Silver);
+            GL.Color3(Color.Orange);
             GL.Vertex3(-1.0f, -1.0f, -1.0f);
             GL.Vertex3(-1.0f, 1.0f, -1.0f);
             GL.Vertex3(1.0f, 1.0f, -1.0f);
@@ -761,7 +807,6 @@ namespace OpenTK_002_WindowsForm
             GL.Vertex3(-1.0f, -1.0f, 1.0f);
 
             GL.Color3(Color.Moccasin);
-
             GL.Vertex3(-1.0f, -1.0f, -1.0f);
             GL.Vertex3(-1.0f, -1.0f, 1.0f);
             GL.Vertex3(-1.0f, 1.0f, 1.0f);
@@ -785,7 +830,7 @@ namespace OpenTK_002_WindowsForm
             GL.Vertex3(1.0f, 1.0f, 1.0f);
             GL.Vertex3(1.0f, -1.0f, 1.0f);
 
-            GL.End();
+            GL.End();            
         }
 
         #endregion
