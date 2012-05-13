@@ -12,3 +12,4 @@ E:\Visual Studio 2010\OpenTK_003_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debu
 E:\Visual Studio 2010\OpenTK_003_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\OpenTK_002_WindowsForm.Properties.Resources.resources
 E:\Visual Studio 2010\OpenTK_003_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\GenerateResource.read.1.tlog
 E:\Visual Studio 2010\OpenTK_003_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Visual Studio 2010\OpenTK_003_WindowsForm\OpenTK_002_WindowsForm\obj\x86\Debug\OpenTK_002_WindowsForm.propertiesDialog.resources

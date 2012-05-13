@@ -31,29 +31,34 @@
             this.components = new System.ComponentModel.Container();
             this.glControl1 = new OpenTK.GLControl();
             this.label1 = new System.Windows.Forms.Label();
-            this.btnLine = new System.Windows.Forms.Button();
-            this.btnPolyLine = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnPoint = new System.Windows.Forms.Button();
-            this.btnQuad = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnLoopLine = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.ColumnHeader_ID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColumnHeaderType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColumnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeaderColor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button_FromFile = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.label3 = new System.Windows.Forms.Label();
             this.bgw_vertexSnap = new System.ComponentModel.BackgroundWorker();
             this.label2 = new System.Windows.Forms.Label();
             this.cb_vertexSnap = new System.Windows.Forms.CheckBox();
-            this.btn_VBOtest = new System.Windows.Forms.Button();
+            this.tbar_rotateX = new System.Windows.Forms.TrackBar();
+            this.tbar_rotateY = new System.Windows.Forms.TrackBar();
+            this.tbar_rotateZ = new System.Windows.Forms.TrackBar();
+            this.lab_XY_ctrl_coordLabel = new System.Windows.Forms.Label();
+            this.lab_Zrotate = new System.Windows.Forms.Label();
+            this.lab_Yrotate = new System.Windows.Forms.Label();
+            this.lab_Xrotate = new System.Windows.Forms.Label();
+            this.btn_HOME_coord = new System.Windows.Forms.Button();
+            this.btn_2x4 = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateZ)).BeginInit();
             this.SuspendLayout();
             // 
             // glControl1
@@ -64,9 +69,9 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.glControl1.Location = new System.Drawing.Point(183, 12);
+            this.glControl1.Location = new System.Drawing.Point(164, 12);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(757, 375);
+            this.glControl1.Size = new System.Drawing.Size(812, 367);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
@@ -85,61 +90,21 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(905, 390);
+            this.label1.Location = new System.Drawing.Point(115, 385);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "label1";
             // 
-            // btnLine
-            // 
-            this.btnLine.Location = new System.Drawing.Point(101, 12);
-            this.btnLine.Name = "btnLine";
-            this.btnLine.Size = new System.Drawing.Size(76, 23);
-            this.btnLine.TabIndex = 6;
-            this.btnLine.Text = "Line";
-            this.btnLine.UseVisualStyleBackColor = true;
-            this.btnLine.Click += new System.EventHandler(this.buttonLine_Click);
-            // 
-            // btnPolyLine
-            // 
-            this.btnPolyLine.Location = new System.Drawing.Point(102, 70);
-            this.btnPolyLine.Name = "btnPolyLine";
-            this.btnPolyLine.Size = new System.Drawing.Size(75, 23);
-            this.btnPolyLine.TabIndex = 7;
-            this.btnPolyLine.Text = "PolyLine";
-            this.btnPolyLine.UseVisualStyleBackColor = true;
-            this.btnPolyLine.Click += new System.EventHandler(this.buttonPolyLine_Click);
-            // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(137, 157);
+            this.btnClear.Location = new System.Drawing.Point(118, 12);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(40, 23);
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.buttonClear_Click);
-            // 
-            // btnPoint
-            // 
-            this.btnPoint.Location = new System.Drawing.Point(102, 99);
-            this.btnPoint.Name = "btnPoint";
-            this.btnPoint.Size = new System.Drawing.Size(75, 23);
-            this.btnPoint.TabIndex = 9;
-            this.btnPoint.Text = "Point";
-            this.btnPoint.UseVisualStyleBackColor = true;
-            this.btnPoint.Click += new System.EventHandler(this.buttonPoint_Click);
-            // 
-            // btnQuad
-            // 
-            this.btnQuad.Location = new System.Drawing.Point(102, 128);
-            this.btnQuad.Name = "btnQuad";
-            this.btnQuad.Size = new System.Drawing.Size(75, 23);
-            this.btnQuad.TabIndex = 10;
-            this.btnQuad.Text = "Quad";
-            this.btnQuad.UseVisualStyleBackColor = true;
-            this.btnQuad.Click += new System.EventHandler(this.buttonQuad_Click);
             // 
             // contextMenuStrip1
             // 
@@ -172,21 +137,11 @@
             this.copyToolStripMenuItem.Text = "copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
-            // btnLoopLine
-            // 
-            this.btnLoopLine.Location = new System.Drawing.Point(102, 41);
-            this.btnLoopLine.Name = "btnLoopLine";
-            this.btnLoopLine.Size = new System.Drawing.Size(75, 23);
-            this.btnLoopLine.TabIndex = 11;
-            this.btnLoopLine.Text = "LoopLine";
-            this.btnLoopLine.UseVisualStyleBackColor = true;
-            this.btnLoopLine.Click += new System.EventHandler(this.buttonLoopLine_Click);
-            // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(12, 99);
+            this.button2.Location = new System.Drawing.Point(4, 12);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(29, 23);
+            this.button2.Size = new System.Drawing.Size(58, 23);
             this.button2.TabIndex = 13;
             this.button2.Text = "deselect";
             this.button2.UseVisualStyleBackColor = true;
@@ -197,13 +152,13 @@
             this.listView1.AllowColumnReorder = true;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColumnHeader_ID,
-            this.ColumnHeaderType,
+            this.ColumnHeaderName,
             this.ColumnHeaderColor});
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
-            this.listView1.Location = new System.Drawing.Point(4, 210);
+            this.listView1.Location = new System.Drawing.Point(4, 64);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(173, 177);
+            this.listView1.Size = new System.Drawing.Size(154, 177);
             this.listView1.TabIndex = 14;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -216,24 +171,14 @@
             this.ColumnHeader_ID.Text = "ID";
             this.ColumnHeader_ID.Width = 36;
             // 
-            // ColumnHeaderType
+            // ColumnHeaderName
             // 
-            this.ColumnHeaderType.Text = "Type";
-            this.ColumnHeaderType.Width = 72;
+            this.ColumnHeaderName.Text = "Name";
+            this.ColumnHeaderName.Width = 51;
             // 
             // ColumnHeaderColor
             // 
             this.ColumnHeaderColor.Text = "Color";
-            // 
-            // button_FromFile
-            // 
-            this.button_FromFile.Location = new System.Drawing.Point(20, 12);
-            this.button_FromFile.Name = "button_FromFile";
-            this.button_FromFile.Size = new System.Drawing.Size(75, 23);
-            this.button_FromFile.TabIndex = 15;
-            this.button_FromFile.Text = "From File";
-            this.button_FromFile.UseVisualStyleBackColor = true;
-            this.button_FromFile.Click += new System.EventHandler(this.button_FromFile_Click);
             // 
             // openFileDialog1
             // 
@@ -244,7 +189,7 @@
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(180, 390);
+            this.label3.Location = new System.Drawing.Point(115, 408);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 17;
@@ -259,7 +204,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(869, 390);
+            this.label2.Location = new System.Drawing.Point(1, 385);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(30, 13);
             this.label2.TabIndex = 18;
@@ -268,47 +213,139 @@
             // cb_vertexSnap
             // 
             this.cb_vertexSnap.AutoSize = true;
-            this.cb_vertexSnap.Location = new System.Drawing.Point(4, 187);
+            this.cb_vertexSnap.Location = new System.Drawing.Point(12, 41);
             this.cb_vertexSnap.Name = "cb_vertexSnap";
             this.cb_vertexSnap.Size = new System.Drawing.Size(81, 17);
             this.cb_vertexSnap.TabIndex = 19;
             this.cb_vertexSnap.Text = "vertex snap";
             this.cb_vertexSnap.UseVisualStyleBackColor = true;
             // 
-            // btn_VBOtest
+            // tbar_rotateX
             // 
-            this.btn_VBOtest.Location = new System.Drawing.Point(20, 41);
-            this.btn_VBOtest.Name = "btn_VBOtest";
-            this.btn_VBOtest.Size = new System.Drawing.Size(75, 23);
-            this.btn_VBOtest.TabIndex = 20;
-            this.btn_VBOtest.Text = "VBO test";
-            this.btn_VBOtest.UseVisualStyleBackColor = true;
-            this.btn_VBOtest.Click += new System.EventHandler(this.btn_VBOtest_Click);
+            this.tbar_rotateX.AccessibleName = "";
+            this.tbar_rotateX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbar_rotateX.Location = new System.Drawing.Point(164, 385);
+            this.tbar_rotateX.Maximum = 180;
+            this.tbar_rotateX.Minimum = -180;
+            this.tbar_rotateX.Name = "tbar_rotateX";
+            this.tbar_rotateX.Size = new System.Drawing.Size(812, 45);
+            this.tbar_rotateX.TabIndex = 20;
+            this.tbar_rotateX.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.tbar_rotateX.ValueChanged += new System.EventHandler(this.tbar_rotateX_ValueChanged);
+            // 
+            // tbar_rotateY
+            // 
+            this.tbar_rotateY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbar_rotateY.Location = new System.Drawing.Point(961, 12);
+            this.tbar_rotateY.Maximum = 180;
+            this.tbar_rotateY.Minimum = -180;
+            this.tbar_rotateY.Name = "tbar_rotateY";
+            this.tbar_rotateY.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.tbar_rotateY.Size = new System.Drawing.Size(45, 367);
+            this.tbar_rotateY.TabIndex = 21;
+            this.tbar_rotateY.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
+            this.tbar_rotateY.ValueChanged += new System.EventHandler(this.tbar_rotateY_ValueChanged);
+            // 
+            // tbar_rotateZ
+            // 
+            this.tbar_rotateZ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbar_rotateZ.Location = new System.Drawing.Point(1001, 12);
+            this.tbar_rotateZ.Maximum = 180;
+            this.tbar_rotateZ.Minimum = -180;
+            this.tbar_rotateZ.Name = "tbar_rotateZ";
+            this.tbar_rotateZ.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.tbar_rotateZ.Size = new System.Drawing.Size(45, 367);
+            this.tbar_rotateZ.TabIndex = 22;
+            this.tbar_rotateZ.ValueChanged += new System.EventHandler(this.tbar_rotateZ_ValueChanged);
+            // 
+            // lab_XY_ctrl_coordLabel
+            // 
+            this.lab_XY_ctrl_coordLabel.AutoSize = true;
+            this.lab_XY_ctrl_coordLabel.Location = new System.Drawing.Point(1, 408);
+            this.lab_XY_ctrl_coordLabel.Name = "lab_XY_ctrl_coordLabel";
+            this.lab_XY_ctrl_coordLabel.Size = new System.Drawing.Size(79, 13);
+            this.lab_XY_ctrl_coordLabel.TabIndex = 23;
+            this.lab_XY_ctrl_coordLabel.Text = "Control Coords:";
+            // 
+            // lab_Zrotate
+            // 
+            this.lab_Zrotate.AutoSize = true;
+            this.lab_Zrotate.Location = new System.Drawing.Point(1, 366);
+            this.lab_Zrotate.Name = "lab_Zrotate";
+            this.lab_Zrotate.Size = new System.Drawing.Size(55, 13);
+            this.lab_Zrotate.TabIndex = 24;
+            this.lab_Zrotate.Text = "Z rotation:";
+            // 
+            // lab_Yrotate
+            // 
+            this.lab_Yrotate.AutoSize = true;
+            this.lab_Yrotate.Location = new System.Drawing.Point(1, 353);
+            this.lab_Yrotate.Name = "lab_Yrotate";
+            this.lab_Yrotate.Size = new System.Drawing.Size(55, 13);
+            this.lab_Yrotate.TabIndex = 25;
+            this.lab_Yrotate.Text = "Y rotation:";
+            // 
+            // lab_Xrotate
+            // 
+            this.lab_Xrotate.AutoSize = true;
+            this.lab_Xrotate.Location = new System.Drawing.Point(1, 340);
+            this.lab_Xrotate.Name = "lab_Xrotate";
+            this.lab_Xrotate.Size = new System.Drawing.Size(55, 13);
+            this.lab_Xrotate.TabIndex = 26;
+            this.lab_Xrotate.Text = "Z rotation:";
+            // 
+            // btn_HOME_coord
+            // 
+            this.btn_HOME_coord.Location = new System.Drawing.Point(971, 385);
+            this.btn_HOME_coord.Name = "btn_HOME_coord";
+            this.btn_HOME_coord.Size = new System.Drawing.Size(75, 23);
+            this.btn_HOME_coord.TabIndex = 27;
+            this.btn_HOME_coord.Text = "HOME";
+            this.btn_HOME_coord.UseVisualStyleBackColor = true;
+            this.btn_HOME_coord.Click += new System.EventHandler(this.btn_HOME_coord_Click);
+            // 
+            // btn_2x4
+            // 
+            this.btn_2x4.Location = new System.Drawing.Point(4, 247);
+            this.btn_2x4.Name = "btn_2x4";
+            this.btn_2x4.Size = new System.Drawing.Size(75, 23);
+            this.btn_2x4.TabIndex = 28;
+            this.btn_2x4.Text = "buildWall";
+            this.btn_2x4.UseVisualStyleBackColor = true;
+            this.btn_2x4.Click += new System.EventHandler(this.btn_buildWall);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(952, 412);
-            this.Controls.Add(this.btn_VBOtest);
+            this.ClientSize = new System.Drawing.Size(1058, 430);
+            this.Controls.Add(this.btn_2x4);
+            this.Controls.Add(this.btn_HOME_coord);
+            this.Controls.Add(this.lab_Xrotate);
+            this.Controls.Add(this.lab_Yrotate);
+            this.Controls.Add(this.lab_Zrotate);
+            this.Controls.Add(this.lab_XY_ctrl_coordLabel);
+            this.Controls.Add(this.tbar_rotateZ);
             this.Controls.Add(this.cb_vertexSnap);
+            this.Controls.Add(this.tbar_rotateY);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.button_FromFile);
-            this.Controls.Add(this.btnLine);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnLoopLine);
+            this.Controls.Add(this.tbar_rotateX);
             this.Controls.Add(this.listView1);
-            this.Controls.Add(this.btnPoint);
-            this.Controls.Add(this.btnQuad);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.glControl1);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.button2);
-            this.Controls.Add(this.btnPolyLine);
+            this.Controls.Add(this.glControl1);
             this.Name = "Form1";
             this.Text = "Rob\'s OpenTK Drawing Program";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.contextMenuStrip1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateZ)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -318,20 +355,14 @@
 
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnLine;
-        private System.Windows.Forms.Button btnPolyLine;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnPoint;
-        private System.Windows.Forms.Button btnQuad;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.Button btnLoopLine;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader ColumnHeader_ID;
-        private System.Windows.Forms.ColumnHeader ColumnHeaderType;
+        private System.Windows.Forms.ColumnHeader ColumnHeaderName;
         private System.Windows.Forms.ColumnHeader ColumnHeaderColor;
-        private System.Windows.Forms.Button button_FromFile;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Label label3;
         private System.ComponentModel.BackgroundWorker bgw_vertexSnap;
@@ -339,7 +370,15 @@
         private System.Windows.Forms.CheckBox cb_vertexSnap;
         private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
-        private System.Windows.Forms.Button btn_VBOtest;
+        private System.Windows.Forms.TrackBar tbar_rotateX;
+        private System.Windows.Forms.TrackBar tbar_rotateY;
+        private System.Windows.Forms.TrackBar tbar_rotateZ;
+        private System.Windows.Forms.Label lab_XY_ctrl_coordLabel;
+        private System.Windows.Forms.Label lab_Zrotate;
+        private System.Windows.Forms.Label lab_Yrotate;
+        private System.Windows.Forms.Label lab_Xrotate;
+        private System.Windows.Forms.Button btn_HOME_coord;
+        private System.Windows.Forms.Button btn_2x4;
     }
 }
 

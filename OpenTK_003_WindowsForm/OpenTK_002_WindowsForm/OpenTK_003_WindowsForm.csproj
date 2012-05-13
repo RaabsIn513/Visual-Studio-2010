@@ -70,8 +70,15 @@
     <Compile Include="point.cs" />
     <Compile Include="polygon.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="propertiesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="propertiesDialog.Designer.cs">
+      <DependentUpon>propertiesDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="quad.cs" />
+    <Compile Include="renderList.cs" />
     <Compile Include="tools.cs" />
     <Compile Include="triangle.cs">
       <SubType>Code</SubType>
@@ -82,6 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="glPrimitiveDialog.resx">
       <DependentUpon>glPrimitiveDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="propertiesDialog.resx">
+      <DependentUpon>propertiesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

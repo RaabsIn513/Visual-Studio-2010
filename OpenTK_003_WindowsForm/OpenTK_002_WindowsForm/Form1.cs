@@ -27,6 +27,7 @@ namespace OpenTK_002_WindowsForm
         float xWCS = 0;
         float yWCS = 0;
         float zWCS = 0;
+        float zoomFactor = 1;
         bool userLine = false;
         bool userLoopLine = false;
         bool userPoly = false;
@@ -35,16 +36,19 @@ namespace OpenTK_002_WindowsForm
         bool userCircle = false;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
-        Point actualGL_pos;
-        static float angleX = 0;
-        static float angleY = 0;
-        static float angleZ = 0;
-        static float magnitude = 0;
+        //Point actualGL_pos;
+        static float rotateX = 0;
+        static float rotateY = 0;
+        static float rotateZ = 0;
+        static float magnitudeX = 0;
+        static float magnitudeY = 0;
+        static float magnitudeZ = 0;
         static bool shftKey_state = false;
         static tools userTools;
         byte[] b = new byte[3];
         RandomNumberGenerator rndGen = System.Security.Cryptography.RandomNumberGenerator.Create();
-        
+        Matrix4 lookat;
+        renderList rl = new renderList();
         
         public Form1()
         {
@@ -107,15 +111,6 @@ namespace OpenTK_002_WindowsForm
 
         private void SetupViewport()
         {
-            //int w = glControl1.Width;
-            //int h = glControl1.Height;
-            //GL.MatrixMode(MatrixMode.Projection);
-            //GL.LoadIdentity();
-            //GL.Ortho(0, w, h, 0, 1, -1); // Upper-left corner pixel has coordinate (0, 0)
-            //GL.Viewport(0, 0, w, h);     // Use all of the glControl painting area
-            ////GL.Ortho(0, w, 0, h, 1, -1); 
-            ////GL.Viewport(0, 0, w, h);                 
-
             OpenTK.GLControl c = glControl1;
 
             if (c.ClientSize.Height == 0)
@@ -133,68 +128,75 @@ namespace OpenTK_002_WindowsForm
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.DepthTest);
-            GL.ClearColor(Color.DarkBlue);   
+            GL.ClearColor(Color.DarkBlue);
 
-            Matrix4 lookat = Matrix4.LookAt(0, 5, 5, 0, 0, 0, 0, 1, 0);
+            Matrix4 lookat = Matrix4.LookAt(15 / zoomFactor, 15 / zoomFactor, 15 / zoomFactor, 0, 0, 0, 0, 1, 0);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref lookat);
+
+            GL.Translate(xWCS , yWCS , zWCS);
+            GL.Rotate(magnitudeX, 1, 0, 0);
+            GL.Rotate(magnitudeY, 0, 1, 0);
+            GL.Rotate(magnitudeZ, 0, 0, 1);
             
-            GL.Translate(xWCS, yWCS, zWCS);
-
-            GL.Rotate(magnitude, angleX, angleY, angleZ);
-
-            //ds.drawPrimList(actualGL_pos);
-
-            Axis.width = (float)1.0;
+            Axis.width = (float)1.5;
             Axis.drawOrigin();
 
-            DrawCube();
+            rl.Render();
 
-            VertexBuffer vbo = new VertexBuffer();
-            Vertex[] data = new Vertex[24];
-            
-            data[0].Position = new Vector3(-1.0f, -1.0f, -1.0f);
-            data[1].Position = new Vector3(-1.0f, 1.0f, -1.0f);
-            data[2].Position = new Vector3(1.0f, 1.0f, -1.0f);
-            data[3].Position = new Vector3(1.0f, -1.0f, -1.0f);
-            data[4].Position = new Vector3(-1.0f, -1.0f, -1.0f);
-            data[5].Position = new Vector3(1.0f, -1.0f, -1.0f);
-            data[6].Position = new Vector3(1.0f, -1.0f, 1.0f);
-            data[7].Position = new Vector3(-1.0f, -1.0f, 1.0f);
-            data[8].Position = new Vector3(-1.0f, -1.0f, -1.0f);
-            data[9].Position = new Vector3(-1.0f, -1.0f, 1.0f);
-            data[10].Position = new Vector3(-1.0f, 1.0f, 1.0f);
-            data[11].Position = new Vector3(-1.0f, 1.0f, -1.0f);
-            data[12].Position = new Vector3(-1.0f, -1.0f, 1.0f);
-            data[13].Position = new Vector3(1.0f, -1.0f, 1.0f);
-            data[14].Position = new Vector3(1.0f, 1.0f, 1.0f);
-            data[15].Position = new Vector3(-1.0f, 1.0f, 1.0f);
-            data[16].Position = new Vector3(-1.0f, 1.0f, -1.0f);
-            data[17].Position = new Vector3(-1.0f, 1.0f, 1.0f);
-            data[18].Position = new Vector3(1.0f, 1.0f, 1.0f);
-            data[19].Position = new Vector3(1.0f, 1.0f, -1.0f);
-            data[20].Position = new Vector3(1.0f, -1.0f, -1.0f);
-            data[21].Position = new Vector3(1.0f, 1.0f, -1.0f);
-            data[22].Position = new Vector3(1.0f, 1.0f, 1.0f);
-            data[23].Position = new Vector3(1.0f, -1.0f, 1.0f);
-            
-            for (int i = 0; i < data.Length; i++)
-            {
-                //GL.Color3(Color.FromArgb(i, i*2, 255-i));
-                GL.Color3(Color.FromArgb(b[0], b[1], b[2]));
-                
-                data[i].Position.Add(new Vector3(0.5f, 0.5f, 0.5f));
-                data[i].Normal = Vector3.UnitX;
-                data[i].TexCoord.X = 0.5f;
-                data[i].TexCoord.Y = 1.0f;
-            }
-
-            vbo.SetData(data);
-
-            vbo.Render();
+            GL.PushMatrix();
+            //twoByFour().Render();
 
             if (!ds.busyDrawing())
                 glControl1.SwapBuffers();            
+        }
+
+        private VertexBuffer twoByFour()
+        {
+            // A 2x4 in inches
+            float width = 2.0f;
+            float length = 4.0f;
+            float height = 96f;
+
+            VertexBuffer result = Block(width, length, height);
+            result.Scale(0.125f);
+            result.Translate(0, 0, 0);
+            return result;
+        }
+
+        private VertexBuffer Block(float width, float length, float height)
+        {
+            GL.Color3(Color.Beige);
+            VertexBuffer result = new VertexBuffer();
+            Vertex[] data = new Vertex[24];
+
+            data[0].Position = new Vector3(0, 0, 0);
+            data[1].Position = new Vector3(0, length, 0);
+            data[2].Position = new Vector3(width, length, 0);
+            data[3].Position = new Vector3(width, 0, 0);
+            data[4].Position = new Vector3(0, 0, 0);
+            data[5].Position = new Vector3(width, 0, 0);
+            data[6].Position = new Vector3(width, 0, height);
+            data[7].Position = new Vector3(0, 0, height);
+            data[8].Position = new Vector3(0, 0, 0);
+            data[9].Position = new Vector3(0, 0, height);
+            data[10].Position = new Vector3(0, length, height);
+            data[11].Position = new Vector3(0, length, 0);
+            data[12].Position = new Vector3(0, 0, height);
+            data[13].Position = new Vector3(width, 0, height);
+            data[14].Position = new Vector3(width, length, height);
+            data[15].Position = new Vector3(0, length, height);
+            data[16].Position = new Vector3(0, length, 0);
+            data[17].Position = new Vector3(0, length, height);
+            data[18].Position = new Vector3(width, length, height);
+            data[19].Position = new Vector3(width, length, 0);
+            data[20].Position = new Vector3(width, 0, 0);
+            data[21].Position = new Vector3(width, length, 0);
+            data[22].Position = new Vector3(width, length, height);
+            data[23].Position = new Vector3(width, 0, height);
+
+            result.data = data;
+            return result;
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -221,6 +223,12 @@ namespace OpenTK_002_WindowsForm
                     break;
                 case Keys.W:
                     yWCS -= 1;
+                    break;
+                case Keys.E:
+                    zWCS += 1;
+                    break;
+                case Keys.Q:
+                    zWCS -= 1;
                     break;
                 case Keys.H:
                     userTools.UserPan = true;
@@ -271,8 +279,8 @@ namespace OpenTK_002_WindowsForm
         private void glControl1_MouseDown(object sender, MouseEventArgs e)
         {   
             prevDownLoc = mouseDownLoc;
-            Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
-            mouseDownLoc = actualGL_pos;
+            //Point actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
+            mouseDownLoc = e.Location;
             
             switch (userTools.currentTool)
             {
@@ -295,12 +303,7 @@ namespace OpenTK_002_WindowsForm
                     glControl1.Cursor = Cursors.Cross;
                     break;
             }
-
-            if (ds.useMoveProgress)
-            {
-                ds.useMoveProgress = false;
-            }
-
+            updateListView();
         }
         
         private void glControl1_MouseUp(object sender, MouseEventArgs e)
@@ -351,13 +354,14 @@ namespace OpenTK_002_WindowsForm
                     }
                     break;
                 case "USER_PAN":
-                    xWCS = (mouseUpLoc.X - mouseDownLoc.X) * (float)0.025;
-                    yWCS = (mouseUpLoc.Y - mouseDownLoc.Y) * (float)0.025;
+                    xWCS += (mouseUpLoc.X - mouseDownLoc.X) * (float)0.025;
+                    yWCS += (mouseUpLoc.Y - mouseDownLoc.Y) * (float)0.025;
                     break;
                 case "USER_ROTATE":
-                    angleX = (mouseUpLoc.X - mouseDownLoc.X) * (float)0.025;
-                    angleY = (mouseUpLoc.Y - mouseDownLoc.Y) * (float)0.025;
-                    magnitude = (float)distance(mouseUpLoc, mouseDownLoc); 
+                    magnitudeX += (mouseUpLoc.X - mouseDownLoc.X) * (float)0.0025;
+                    magnitudeY += (mouseUpLoc.Y - mouseDownLoc.Y) * (float)0.0025;
+                    tbar_rotateX.Value = Convert.ToInt32(magnitudeX);
+                    tbar_rotateY.Value = Convert.ToInt32(magnitudeY);
                     break;
 
                 default:
@@ -365,13 +369,13 @@ namespace OpenTK_002_WindowsForm
                     break;
             }
 
-            refreshListView1();
+            updateListView();
         }
 
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
-            label3.Text = "X: " + actualGL_pos.X.ToString() + " Y: " + actualGL_pos.Y.ToString();
+            //actualGL_pos = new Point(e.Location.X - (int)xWCS, e.Location.Y - (int)yWCS);
+            label3.Text = "X: " + e.Location.X.ToString() + " Y: " + e.Y.ToString();
 
             if (ds.useMoveProgress)
                 Render();
@@ -380,7 +384,7 @@ namespace OpenTK_002_WindowsForm
                 switch (userTools.currentTool)
                 {
                     case "USER_POINT":
-                        point tPoint = new point(actualGL_pos);
+                        point tPoint = new point(e.Location);
                         tPoint.size = 5;
                         tPoint.propColor = Color.Azure;
                         ds.setProgressObj(tPoint);
@@ -390,7 +394,7 @@ namespace OpenTK_002_WindowsForm
                     case "USER_LINE":
                         if (mouseDownLoc != new Point())
                         {
-                            line tLine = new line(mouseDownLoc, actualGL_pos);
+                            line tLine = new line(mouseDownLoc, e.Location);
                             ds.setProgressObj(tLine);
                             ds.useDrawProgress = true;
                         }
@@ -398,7 +402,7 @@ namespace OpenTK_002_WindowsForm
                     case "USER_POLY":
                         if (userPolyPts.Count > 0 && mouseDownLoc != new Point())
                         {
-                            userPolyPts.Add(actualGL_pos); // mouse current location
+                            userPolyPts.Add(e.Location); // mouse current location
                             polygon tPoly = new polygon(userPolyPts);
                             ds.setProgressObj(tPoly);
                             ds.useDrawProgress = true;
@@ -407,7 +411,7 @@ namespace OpenTK_002_WindowsForm
                     case "USER_QUAD":
                         if (mouseDownLoc != new Point())
                         {
-                            quad tQuad = new quad(mouseDownLoc, actualGL_pos); // use the two point method
+                            quad tQuad = new quad(mouseDownLoc, e.Location); // use the two point method
                             ds.setProgressObj(tQuad);
                             ds.useDrawProgress = true;
                             prevDownLoc = mouseDownLoc;
@@ -416,7 +420,7 @@ namespace OpenTK_002_WindowsForm
                     case "USER_LOOPLINE":
                         if ((mouseDownLoc != new Point()) && (userPoints.Count() > 0))
                         {
-                            userPoints.Add(actualGL_pos);
+                            userPoints.Add(e.Location);
                             loopline tPoints = new loopline(userPoints);
                             userPoints.RemoveAt(userPoints.Count() - 1);
                             ds.setProgressObj(tPoints);
@@ -426,17 +430,17 @@ namespace OpenTK_002_WindowsForm
                     case "USER_PAN":
                         if (e.Button == MouseButtons.Left)
                         {
-                            xWCS = (actualGL_pos.X - mouseDownLoc.X) * (float)0.025;
-                            yWCS = (actualGL_pos.Y - mouseDownLoc.Y) * (float)0.025;                        
+                            xWCS += (e.Location.X - mouseDownLoc.X) * (float)0.025;
+                            yWCS += (e.Location.Y - mouseDownLoc.Y) * (float)0.025;                        
                         }
                         break;
                     case "USER_ROTATE":
                         if (e.Button == MouseButtons.Left)
                         {
-                            angleX = (actualGL_pos.X - mouseDownLoc.X) * (float)0.025;
-                            //angleX = (float)1.0;
-                            angleY = (actualGL_pos.Y - mouseDownLoc.Y) * (float)0.025;
-                            magnitude = (float)distance(actualGL_pos, mouseDownLoc);
+                            magnitudeX += (e.Location.X - mouseDownLoc.X) * (float)0.0025;
+                            magnitudeY += (e.Location.Y - mouseDownLoc.Y) * (float)0.0025;
+                            tbar_rotateX.Value = Convert.ToInt32(magnitudeX);
+                            tbar_rotateY.Value = Convert.ToInt32(magnitudeY);
                         }
                         break;
                     default:
@@ -449,15 +453,15 @@ namespace OpenTK_002_WindowsForm
 
         private void glControl1_MouseHover(object sender, EventArgs e)
         {
-            if (!bgw_vertexSnap.IsBusy)
-            {
-                bgw_vertexSnap.RunWorkerAsync(actualGL_pos);
-            }
+            //if (!bgw_vertexSnap.IsBusy)
+            //{
+            //    bgw_vertexSnap.RunWorkerAsync(actualGL_pos);
+            //}
         }
 
 
         /// <summary>
-        /// Scroll to zoom. 
+        /// Shift + Scroll to zoom. 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -466,9 +470,9 @@ namespace OpenTK_002_WindowsForm
             if (shftKey_state)
             {
                 if (e.Delta > 0)
-                    zWCS += (float)0.025;
+                    zoomFactor += (float)0.05;
                 if (e.Delta < 0)
-                    zWCS -= (float)0.025;
+                    zoomFactor -= (float)0.05;
             }
             glControl1.Invalidate();
         }
@@ -648,14 +652,14 @@ namespace OpenTK_002_WindowsForm
 
         private void bgw_vertexSnap_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Point result = new Point();
-            result = (Point)e.Result;
+            //Point result = new Point();
+            //result = (Point)e.Result;
 
-            if (result != new Point())       // If there is a result, use it (vertex snap)
-                if (result != actualGL_pos)
-                    Cursor.Position = glControl1.PointToScreen(result);
+            //if (result != new Point())       // If there is a result, use it (vertex snap)
+            //    if (result != actualGL_pos)
+            //        Cursor.Position = glControl1.PointToScreen(result);
 
-            Thread.Sleep(200);
+            //Thread.Sleep(200);
         }
 
         #endregion
@@ -676,14 +680,14 @@ namespace OpenTK_002_WindowsForm
 
             if (selectedItem.Count == 1)
             {
-                // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                object passTo = (object)selectedObj;                                    //Cast it as a C# object
-                glPrimitiveDialog dia = new glPrimitiveDialog(passTo);                  //Pass it to a new instance of glPrimitiveDialog (C# can't pass custom classes between forms)
-                dia.ShowDialog(this);                                                   //ShowDialog (pauses here till user closes dialog)
-                selectedObj = (glPrimitives)dia.getResult();                            //Set the selected object to the result from the dialog
-                refreshListView1();
+                string selectedID = selectedItem[0].SubItems[0].Text;
+                VertexBuffer vb = rl.getByID(Convert.ToInt32(selectedID));
+                object vb_asObject = (object)vb;
+                propertiesDialog dia = new propertiesDialog(vb_asObject);
+                dia.ShowDialog(this);
+                VertexBuffer vb2 = (VertexBuffer)dia.getResult();
+                rl.replaceByID(Convert.ToInt32(selectedID), vb2);
+                updateListView();
             }
         }
         
@@ -693,11 +697,10 @@ namespace OpenTK_002_WindowsForm
 
             if (selectedItem.Count == 1)
             {
-                // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                ds.deleteByID(Convert.ToInt32(primID));
+                int ID = Convert.ToInt32(selectedItem[0].SubItems[0].Text);
+                rl.deleteByID(ID);
             }
-            refreshListView1();
+            updateListView();
         }
 
         private void moveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -706,14 +709,15 @@ namespace OpenTK_002_WindowsForm
             
             if (selectedItem.Count == 1)
             {
-                // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
-                userTools.deselectAllTools();
-                ds.setMoveProgressObj(selectedObj);
-                ds.useMoveProgress = true;
+                //// Get the glPrimitive's ID and get the glPrimitive
+                //string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                //glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                //Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
+                //userTools.deselectAllTools();
+                //ds.setMoveProgressObj(selectedObj);
+                //ds.useMoveProgress = true;
             }
+            MessageBox.Show("Not yet implemented");
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -722,15 +726,16 @@ namespace OpenTK_002_WindowsForm
 
             if (selectedItem.Count == 1)
             {
-                // Get the glPrimitive's ID and get the glPrimitive
-                string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
-                userTools.deselectAllTools();
-                glPrimitives copy = new glPrimitives(selectedObj.getGeoData(), selectedObj.getPrimitiveType());
-                ds.setMoveProgressObj(copy);
-                ds.useMoveProgress = true;
+                //// Get the glPrimitive's ID and get the glPrimitive
+                //string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
+                //glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
+                //Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
+                //userTools.deselectAllTools();
+                //glPrimitives copy = new glPrimitives(selectedObj.getGeoData(), selectedObj.getPrimitiveType());
+                //ds.setMoveProgressObj(copy);
+                //ds.useMoveProgress = true;
             }
+            MessageBox.Show("Not yet implemented");
         }
         
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -746,18 +751,18 @@ namespace OpenTK_002_WindowsForm
         {
             ListView.SelectedListViewItemCollection selItems = listView1.SelectedItems;
 
-            for (int i = 0; i < listView1.Items.Count; i++)
-            {
-                ds.getPrimByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
-            }
+            //for (int i = 0; i < listView1.Items.Count; i++)
+            //{
+            //    ds.getPrimByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
+            //}
 
-            string showSelItems = null;
-            for (int i = 0; i < selItems.Count; i++)
-            {
-                showSelItems += selItems[i].SubItems[0].Text.ToString() + " : " + selItems[i].SubItems[1].Text.ToString() + "\n";
+            //string showSelItems = null;
+            //for (int i = 0; i < selItems.Count; i++)
+            //{
+            //    showSelItems += selItems[i].SubItems[0].Text.ToString() + " : " + selItems[i].SubItems[1].Text.ToString() + "\n";
 
-                ds.getPrimByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
-            }
+            //    ds.getPrimByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
+            //}
         }
 
         public void refreshListView1()
@@ -835,6 +840,76 @@ namespace OpenTK_002_WindowsForm
 
         #endregion
 
+        private void tbar_rotateX_ValueChanged(object sender, EventArgs e)
+        {
+            int value = tbar_rotateX.Value;
+            int angleSnap = 10;
+            //if (((value - 0) <= angleSnap) || ((value + 0) <= angleSnap))
+            //    value = 0;
+            //else
+                magnitudeX = value;
+            lab_Xrotate.Text = "X Rotation: " + value;
+        }
 
+        private void tbar_rotateY_ValueChanged(object sender, EventArgs e)
+        {
+            int value = tbar_rotateY.Value;
+            magnitudeY = value;
+
+            lab_Yrotate.Text = "Y Rotation: " + value;
+        }
+
+        private void tbar_rotateZ_ValueChanged(object sender, EventArgs e)
+        {
+            int value = tbar_rotateZ.Value;
+            magnitudeZ = value;
+
+            lab_Zrotate.Text = "Z Rotation: " + value;
+        }
+
+        private void btn_HOME_coord_Click(object sender, EventArgs e)
+        {
+            magnitudeX = 0;
+            magnitudeY = 0;
+            magnitudeZ = 0;
+            tbar_rotateX.Value = 0;
+            tbar_rotateY.Value = 0;
+            tbar_rotateZ.Value = 0;
+        }
+
+        public void updateListView()
+        {
+            listView1.Items.Clear();
+            listView1.Items.AddRange(rl.forListViewCtrl().ToArray());
+            for (int i = 0; i < listView1.Items.Count; i++)
+                listView1.Items[i].BackColor = rl[i].color;
+        }
+
+        private void btn_buildWall(object sender, EventArgs e)
+        {
+            VertexBuffer vbA = twoByFour();
+            vbA.color = Color.Brown;
+            vbA.name = "2x4a";
+            vbA.Rotate(-(float)Math.PI / 2, 1, 0, 0);
+            vbA.Translate(0, 0, 0);
+            rl.Add(vbA);
+
+            VertexBuffer vbB = twoByFour();
+            vbB.color = Color.Red;
+            vbB.name = "2x4b";
+            vbB.Rotate(0, 1, 0, 0);
+            vbB.Translate(0, 0, -(float)(96 * 0.125));
+            rl.Add(vbB);
+
+            VertexBuffer vbC = twoByFour();
+            vbC.color = Color.Yellow;
+            vbC.name = "2x4b";
+            vbC.Rotate(0, 1, 0, 0);
+            vbC.Translate(-(float)((200 + 4)* 0.125), 0, 0);
+            rl.Add(vbC);
+
+
+            updateListView();
+        }
     }
 }

@@ -25,10 +25,12 @@ namespace OpenTK_002_WindowsForm
     sealed public class VertexBuffer
     {
         private int length;
-
+        private Vertex[] _data;
+        private string _name;
         private int _id;
+        private Color _color = new Color();
 
-        int id
+        public int id
         {
             get
             {
@@ -44,25 +46,76 @@ namespace OpenTK_002_WindowsForm
                 return _id;
             }
         }
+        public string name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
+        public Color color
+        {
+            get { return _color; }
+            set { _color = value; }
+        }
 
         public VertexBuffer()
         {
+            _name = "vbo_name_not_set";
+            _color = Color.CadetBlue;
         }
 
-        public void SetData(Vertex[] data)
+        public Vertex[] data
         {
-            if (data == null)
+            get { return _data; }
+            set 
             {
-                throw new ArgumentNullException("data");
+                _data = value;
+                if (_data == null)
+                {
+                    throw new ArgumentNullException("data");
+                }
+
+                //System.Console.WriteLine(data.Length);
+
+                this.length = _data.Length;
+                GL.BindBuffer(BufferTarget.ArrayBuffer, id);
+                GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(_data.Length * Vertex.Stride), _data, BufferUsageHint.StaticDraw);
             }
-
-            //System.Console.WriteLine(data.Length);
-
-            this.length = data.Length;
-            GL.BindBuffer(BufferTarget.ArrayBuffer, id);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(data.Length * Vertex.Stride), data, BufferUsageHint.StaticDraw);
         }
 
+        public void Scale(float scaleFactor)
+        {
+            if (scaleFactor != 0)
+            {
+                for (int i = 0; i < _data.Length; i++)
+                    _data[i].Position = new Vector3(_data[i].Position.X * scaleFactor, _data[i].Position.Y * scaleFactor,
+                        _data[i].Position.Z * scaleFactor);
+
+                this.data = _data;
+            }
+            else
+                throw new ArgumentException("Scale Factor must not be zero!");
+        }
+
+        public void Translate(float xDist, float yDist, float zDist)
+        {
+            for (int i = 0; i < _data.Length; i++)
+            {
+                _data[i].Position.X += xDist;
+                _data[i].Position.Y += yDist;
+                _data[i].Position.Z += zDist;
+            }
+            this.data = _data;
+        }
+
+        public void Rotate(float angle, float x, float y, float z)
+        {
+            for (int i = 0; i < _data.Length; i++)
+            {
+                _data[i].Position = Vector3.Transform(_data[i].Position, Matrix4.Rotate(new Vector3(x, y, z), angle));
+            }
+            this.data = _data;
+        }
+        
         public void Render()
         {
             GL.EnableClientState(ArrayCap.VertexArray);
@@ -75,6 +128,7 @@ namespace OpenTK_002_WindowsForm
             GL.TexCoordPointer(2, TexCoordPointerType.Float, Vertex.Stride, new IntPtr(2 * Vector3.SizeInBytes));
             
             //GL.DrawArrays(BeginMode.Triangles, 0, this.length);
+            GL.Color3(_color);
             GL.DrawArrays(BeginMode.Quads, 0, this.length);
             GL.Color3(Color.White);
             GL.PointSize(5f);
