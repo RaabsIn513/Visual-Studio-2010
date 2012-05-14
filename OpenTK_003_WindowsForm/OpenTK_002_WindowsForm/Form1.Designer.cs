@@ -87,8 +87,7 @@
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(115, 385);
             this.label1.Name = "label1";
@@ -104,7 +103,7 @@
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.buttonClear_Click);
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // contextMenuStrip1
             // 
@@ -145,17 +144,19 @@
             this.button2.TabIndex = 13;
             this.button2.Text = "deselect";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // listView1
             // 
             this.listView1.AllowColumnReorder = true;
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ColumnHeader_ID,
             this.ColumnHeaderName,
             this.ColumnHeaderColor});
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
+            this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(4, 64);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(154, 177);
@@ -186,8 +187,7 @@
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(115, 408);
             this.label3.Name = "label3";
@@ -202,7 +202,7 @@
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(1, 385);
             this.label2.Name = "label2";
@@ -223,7 +223,7 @@
             // tbar_rotateX
             // 
             this.tbar_rotateX.AccessibleName = "";
-            this.tbar_rotateX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.tbar_rotateX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbar_rotateX.Location = new System.Drawing.Point(164, 385);
             this.tbar_rotateX.Maximum = 180;
@@ -236,7 +236,7 @@
             // 
             // tbar_rotateY
             // 
-            this.tbar_rotateY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.tbar_rotateY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbar_rotateY.Location = new System.Drawing.Point(961, 12);
             this.tbar_rotateY.Maximum = 180;
@@ -250,7 +250,7 @@
             // 
             // tbar_rotateZ
             // 
-            this.tbar_rotateZ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.tbar_rotateZ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbar_rotateZ.Location = new System.Drawing.Point(1001, 12);
             this.tbar_rotateZ.Maximum = 180;
@@ -263,6 +263,7 @@
             // 
             // lab_XY_ctrl_coordLabel
             // 
+            this.lab_XY_ctrl_coordLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lab_XY_ctrl_coordLabel.AutoSize = true;
             this.lab_XY_ctrl_coordLabel.Location = new System.Drawing.Point(1, 408);
             this.lab_XY_ctrl_coordLabel.Name = "lab_XY_ctrl_coordLabel";
@@ -272,6 +273,7 @@
             // 
             // lab_Zrotate
             // 
+            this.lab_Zrotate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lab_Zrotate.AutoSize = true;
             this.lab_Zrotate.Location = new System.Drawing.Point(1, 366);
             this.lab_Zrotate.Name = "lab_Zrotate";
@@ -281,6 +283,7 @@
             // 
             // lab_Yrotate
             // 
+            this.lab_Yrotate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lab_Yrotate.AutoSize = true;
             this.lab_Yrotate.Location = new System.Drawing.Point(1, 353);
             this.lab_Yrotate.Name = "lab_Yrotate";
@@ -290,6 +293,7 @@
             // 
             // lab_Xrotate
             // 
+            this.lab_Xrotate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lab_Xrotate.AutoSize = true;
             this.lab_Xrotate.Location = new System.Drawing.Point(1, 340);
             this.lab_Xrotate.Name = "lab_Xrotate";
@@ -299,6 +303,7 @@
             // 
             // btn_HOME_coord
             // 
+            this.btn_HOME_coord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btn_HOME_coord.Location = new System.Drawing.Point(971, 385);
             this.btn_HOME_coord.Name = "btn_HOME_coord";
             this.btn_HOME_coord.Size = new System.Drawing.Size(75, 23);
@@ -309,6 +314,7 @@
             // 
             // btn_2x4
             // 
+            this.btn_2x4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btn_2x4.Location = new System.Drawing.Point(4, 247);
             this.btn_2x4.Name = "btn_2x4";
             this.btn_2x4.Size = new System.Drawing.Size(75, 23);

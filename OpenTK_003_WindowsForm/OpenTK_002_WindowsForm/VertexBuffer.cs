@@ -29,6 +29,8 @@ namespace OpenTK_002_WindowsForm
         private string _name;
         private int _id;
         private Color _color = new Color();
+        private Color _selectedColor = Color.Fuchsia;
+        private bool _isSelected = false;
 
         public int id
         {
@@ -56,6 +58,16 @@ namespace OpenTK_002_WindowsForm
             get { return _color; }
             set { _color = value; }
         }
+        public Color selectedColor
+        {
+            get { return _selectedColor; }
+            set { _selectedColor = value; }
+        }
+        public bool isSelected
+        {
+            get { return _isSelected; }
+            set { _isSelected = value; }
+        }
 
         public VertexBuffer()
         {
@@ -73,8 +85,6 @@ namespace OpenTK_002_WindowsForm
                 {
                     throw new ArgumentNullException("data");
                 }
-
-                //System.Console.WriteLine(data.Length);
 
                 this.length = _data.Length;
                 GL.BindBuffer(BufferTarget.ArrayBuffer, id);
@@ -110,9 +120,7 @@ namespace OpenTK_002_WindowsForm
         public void Rotate(float angle, float x, float y, float z)
         {
             for (int i = 0; i < _data.Length; i++)
-            {
                 _data[i].Position = Vector3.Transform(_data[i].Position, Matrix4.Rotate(new Vector3(x, y, z), angle));
-            }
             this.data = _data;
         }
         
@@ -128,7 +136,11 @@ namespace OpenTK_002_WindowsForm
             GL.TexCoordPointer(2, TexCoordPointerType.Float, Vertex.Stride, new IntPtr(2 * Vector3.SizeInBytes));
             
             //GL.DrawArrays(BeginMode.Triangles, 0, this.length);
-            GL.Color3(_color);
+            if (_isSelected)
+                GL.Color3(_selectedColor);
+            else
+                GL.Color3(_color);
+
             GL.DrawArrays(BeginMode.Quads, 0, this.length);
             GL.Color3(Color.White);
             GL.PointSize(5f);

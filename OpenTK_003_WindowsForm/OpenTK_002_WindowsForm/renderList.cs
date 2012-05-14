@@ -84,5 +84,10 @@ namespace OpenTK_002_WindowsForm
             this.deleteByID(id);
             this.Add(replaceWith);
         }
+
+        public void deleteAll()
+        {
+                this.RemoveRange(0,this.Count);
+        }
     }
 }

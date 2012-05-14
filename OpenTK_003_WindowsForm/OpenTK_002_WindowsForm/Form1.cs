@@ -49,7 +49,7 @@ namespace OpenTK_002_WindowsForm
         RandomNumberGenerator rndGen = System.Security.Cryptography.RandomNumberGenerator.Create();
         Matrix4 lookat;
         renderList rl = new renderList();
-        
+        VertexBuffer cube;
         public Form1()
         {
             InitializeComponent();
@@ -69,6 +69,29 @@ namespace OpenTK_002_WindowsForm
             Application.Idle += Application_Idle; // press TAB twice after +=
 
             userTools = new tools();
+
+            //GL.EnableClientState(EnableCap.VertexArray);
+            //GL.EnableClientState(EnableCap.NormalArray);
+            //GL.VertexPointer(3, VertexPointerType.Float, 0, cube.data);
+            ////GL.NormalPointer(NormalPointerType.Float, 0, );
+
+            //// Enable Light 0 and set its parameters.
+            //GL.Light(LightName.Light0, LightParameter.Position, new float[] { -10.0f, -10.0f, -0.5f });
+            //GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            //GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 12.0f, 1.0f, 1.0f, 1.0f });
+            //GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            //GL.Light(LightName.Light0, LightParameter.SpotExponent, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            //GL.LightModel(LightModelParameter.LightModelTwoSide, 1);
+            //GL.LightModel(LightModelParameter.LightModelLocalViewer, 1);
+            //GL.Enable(EnableCap.Lighting);
+            //GL.Enable(EnableCap.Light0);
+
+            //// Use GL.Material to set your object's material parameters.
+            //GL.Material(MaterialFace.Front, MaterialParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            //GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            //GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            //GL.Material(MaterialFace.Front, MaterialParameter.Emission, new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
 
         }
 
@@ -138,14 +161,13 @@ namespace OpenTK_002_WindowsForm
             GL.Rotate(magnitudeX, 1, 0, 0);
             GL.Rotate(magnitudeY, 0, 1, 0);
             GL.Rotate(magnitudeZ, 0, 0, 1);
-            
+
             Axis.width = (float)1.5;
             Axis.drawOrigin();
 
             rl.Render();
 
             GL.PushMatrix();
-            //twoByFour().Render();
 
             if (!ds.busyDrawing())
                 glControl1.SwapBuffers();            
@@ -284,13 +306,6 @@ namespace OpenTK_002_WindowsForm
             
             switch (userTools.currentTool)
             {
-                case "USER_POINT":
-                    point temp = new point(mouseDownLoc);
-                    temp.size = 5;
-                    ds.Add(temp);
-                    ds.useDrawProgress = true;  // continue showing the point as the mouse moves on screen
-                    break;
-
                 case "USER_PAN":
                     //glControl1.Cursor = Cursors.GRABHAND; // closed hand?
                     break;
@@ -314,45 +329,6 @@ namespace OpenTK_002_WindowsForm
 
             switch (userTools.currentTool)
             {
-                case "USER_LINE":
-                    line tline = new line(mouseDownLoc, mouseUpLoc);
-                    tline.propColor = Color.GreenYellow;
-                    ds.Add(tline);
-                    ds.useDrawProgress = false;
-                    mouseDownLoc = new Point();
-                    break;
-                case "USER_POLY":
-                    //userPolyPts.Add(mouseDownLoc);
-                    userPolyPts.Add(mouseUpLoc);
-                    polygon tPoly = new polygon(userPolyPts);
-                    ds.Add(tPoly);
-                    ds.useDrawProgress = false;
-                    mouseDownLoc = new Point();
-                    //mouseUpLoc = mouseDownLoc;
-                    break;
-                case "USER_QUAD":
-                    if(mouseDownLoc != new Point())
-                    {
-                        quad tQuad = new quad(mouseDownLoc, mouseUpLoc);
-                        ds.Add(tQuad);
-                        ds.useDrawProgress = false;
-
-                        prevDownLoc = mouseDownLoc;
-                        mouseDownLoc = new Point();
-                        mouseUpLoc = new Point();
-                    }
-                    break;
-                case "USER_LOOPLINE":
-                    if(mouseDownLoc != new Point())
-                    {
-                        userPoints.Add(mouseDownLoc);
-                        userPoints.Add(mouseUpLoc);
-
-                        loopline tLoopLine = new loopline(userPoints);
-                        ds.Add(tLoopLine);
-                        ds.useDrawProgress = false;
-                    }
-                    break;
                 case "USER_PAN":
                     xWCS += (mouseUpLoc.X - mouseDownLoc.X) * (float)0.025;
                     yWCS += (mouseUpLoc.Y - mouseDownLoc.Y) * (float)0.025;
@@ -383,50 +359,6 @@ namespace OpenTK_002_WindowsForm
             {
                 switch (userTools.currentTool)
                 {
-                    case "USER_POINT":
-                        point tPoint = new point(e.Location);
-                        tPoint.size = 5;
-                        tPoint.propColor = Color.Azure;
-                        ds.setProgressObj(tPoint);
-                        ds.useDrawProgress = true;
-                        break;
-
-                    case "USER_LINE":
-                        if (mouseDownLoc != new Point())
-                        {
-                            line tLine = new line(mouseDownLoc, e.Location);
-                            ds.setProgressObj(tLine);
-                            ds.useDrawProgress = true;
-                        }
-                        break;
-                    case "USER_POLY":
-                        if (userPolyPts.Count > 0 && mouseDownLoc != new Point())
-                        {
-                            userPolyPts.Add(e.Location); // mouse current location
-                            polygon tPoly = new polygon(userPolyPts);
-                            ds.setProgressObj(tPoly);
-                            ds.useDrawProgress = true;
-                        }
-                        break;
-                    case "USER_QUAD":
-                        if (mouseDownLoc != new Point())
-                        {
-                            quad tQuad = new quad(mouseDownLoc, e.Location); // use the two point method
-                            ds.setProgressObj(tQuad);
-                            ds.useDrawProgress = true;
-                            prevDownLoc = mouseDownLoc;
-                        }
-                        break;
-                    case "USER_LOOPLINE":
-                        if ((mouseDownLoc != new Point()) && (userPoints.Count() > 0))
-                        {
-                            userPoints.Add(e.Location);
-                            loopline tPoints = new loopline(userPoints);
-                            userPoints.RemoveAt(userPoints.Count() - 1);
-                            ds.setProgressObj(tPoints);
-                            ds.useDrawProgress = true;
-                        }
-                        break;
                     case "USER_PAN":
                         if (e.Button == MouseButtons.Left)
                         {
@@ -458,8 +390,7 @@ namespace OpenTK_002_WindowsForm
             //    bgw_vertexSnap.RunWorkerAsync(actualGL_pos);
             //}
         }
-
-
+        
         /// <summary>
         /// Shift + Scroll to zoom. 
         /// </summary>
@@ -478,114 +409,6 @@ namespace OpenTK_002_WindowsForm
         }
 
         #endregion
-        
-        #region toolButtons
-
-        private void buttonLine_Click(object sender, EventArgs e)
-        {
-            //selectTool(btnLine.Text.ToString());
-            userTools.UserLine = true;
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void buttonLoopLine_Click(object sender, EventArgs e)
-        {
-            //selectTool(btnLoopLine.Text.ToString());
-            userTools.UserLoopLine = true;
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void buttonPolyLine_Click(object sender, EventArgs e)
-        {
-            //selectTool(btnPolyLine.Text.ToString());
-            userTools.UserPoly = true;
-            userPolyPts = new List<Point>();
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void buttonPoint_Click(object sender, EventArgs e)
-        {
-            //selectTool(btnPoint.Text.ToString());
-            userTools.UserPoint = true;
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void buttonQuad_Click(object sender, EventArgs e)
-        {
-            //selectTool(btnQuad.Text.ToString());
-            userTools.UserQuad = true;
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void buttonClear_Click(object sender, EventArgs e)
-        {
-            userTools.deselectAllTools();
-            ds.deleteAll();
-            //listBox1.Items.Clear();
-            //listBox1.Items.AddRange(ds.viewObjectList());
-
-            refreshListView1();
-            mouseDownLoc = new Point();
-            mouseUpLoc = new Point();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            userTools.deselectAllTools();
-        }
-
-        #endregion
-
-        private void button_FromFile_Click(object sender, EventArgs e)
-        {
-            System.IO.Stream myStream = null;
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            loopline fileDraw;
-            List<Point> tempData = new List<Point>();
-
-            openFileDialog1.InitialDirectory = "c:\\";
-            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2;
-            openFileDialog1.RestoreDirectory = true;
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    if ((myStream = openFileDialog1.OpenFile()) != null)
-                    {
-                        using (myStream)
-                        {
-                            // Insert code to read the stream here.
-                            System.IO.StreamReader sr = new System.IO.StreamReader(myStream);
-
-                            string temp = null;
-                            while (!sr.EndOfStream)
-                            {
-                                temp = sr.ReadLine();
-                                if (temp.Contains(","))
-                                {
-                                    int x = Convert.ToInt32(temp.Substring(0, temp.IndexOf(",")));
-                                    int y = Convert.ToInt32(temp.Substring(temp.IndexOf(",") + 1));
-                                    tempData.Add(new Point(x, y));
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                }
-                fileDraw = new loopline(tempData);
-                ds.Add(fileDraw);
-            }
-        }
         
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -751,18 +574,19 @@ namespace OpenTK_002_WindowsForm
         {
             ListView.SelectedListViewItemCollection selItems = listView1.SelectedItems;
 
-            //for (int i = 0; i < listView1.Items.Count; i++)
-            //{
-            //    ds.getPrimByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
-            //}
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                rl.getByID(Convert.ToInt32(listView1.Items[i].Text.ToString())).isSelected = false;
+            }
 
-            //string showSelItems = null;
-            //for (int i = 0; i < selItems.Count; i++)
-            //{
-            //    showSelItems += selItems[i].SubItems[0].Text.ToString() + " : " + selItems[i].SubItems[1].Text.ToString() + "\n";
+            string showSelItems = null;
+            for (int i = 0; i < selItems.Count; i++)
+            {
+                showSelItems += selItems[i].SubItems[0].Text.ToString() + " : " + selItems[i].SubItems[1].Text.ToString() + "\n";
 
-            //    ds.getPrimByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
-            //}
+                rl.getByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
+            }
+
         }
 
         public void refreshListView1()
@@ -773,13 +597,6 @@ namespace OpenTK_002_WindowsForm
                 listView1.Items[i].BackColor = ds.getByIndex(i).propColor;
         }
         #endregion
-
-        private void btn_VBOtest_Click(object sender, EventArgs e)
-        {
-            int idk;
-            GL.GenBuffers(1, out idk); 
-            //.BindBuffer(
-        }
 
         #region OnClosing
 
@@ -887,28 +704,131 @@ namespace OpenTK_002_WindowsForm
 
         private void btn_buildWall(object sender, EventArgs e)
         {
+            int sleepTime = 250;
             VertexBuffer vbA = twoByFour();
             vbA.color = Color.Brown;
             vbA.name = "2x4a";
-            vbA.Rotate(-(float)Math.PI / 2, 1, 0, 0);
-            vbA.Translate(0, 0, 0);
             rl.Add(vbA);
-
-            VertexBuffer vbB = twoByFour();
-            vbB.color = Color.Red;
-            vbB.name = "2x4b";
-            vbB.Rotate(0, 1, 0, 0);
-            vbB.Translate(0, 0, -(float)(96 * 0.125));
-            rl.Add(vbB);
+            Thread.Sleep(sleepTime);
+            vbA.Rotate(-(float)Math.PI / 2, 1, 0, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbA.Rotate(-(float)Math.PI / 2, 0, 1, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbA.Rotate(-(float)Math.PI / 2, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbA.Translate(0, 0, 0);
+            
 
             VertexBuffer vbC = twoByFour();
             vbC.color = Color.Yellow;
-            vbC.name = "2x4b";
-            vbC.Rotate(0, 1, 0, 0);
-            vbC.Translate(-(float)((200 + 4)* 0.125), 0, 0);
+            vbC.name = "2x4c";
             rl.Add(vbC);
+            vbC.Rotate(0, 1, 0, 0);
+            vbC.Rotate(0, 0, 1, 0);
+            vbC.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbC.Translate(0, -(float)(4 * 0.125), (float)(2 * 0.125));
+            
 
+            VertexBuffer vbD = twoByFour();
+            vbD.color = Color.LemonChiffon;
+            vbD.name = "2x4d";
+            rl.Add(vbD);
+            vbD.Rotate(0, 1, 0, 0);
+            vbD.Rotate(0, 0, 1, 0);
+            vbD.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbD.Translate((float)(16 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
 
+            VertexBuffer vbE = twoByFour();
+            vbE.color = Color.LawnGreen;
+            vbE.name = "2x4e";
+            rl.Add(vbE);
+            vbE.Rotate(0, 1, 0, 0);
+            vbE.Rotate(0, 0, 1, 0);
+            vbE.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbE.Translate((float)(32 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
+
+            VertexBuffer vbF = twoByFour();
+            vbF.color = Color.Khaki;
+            vbF.name = "2x4f";
+            rl.Add(vbF);
+            vbF.Rotate(0, 1, 0, 0);
+            vbF.Rotate(0, 0, 1, 0);
+            vbF.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbF.Translate((float)(48 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
+
+            VertexBuffer vbG = twoByFour();
+            vbG.color = Color.Indigo;
+            vbG.name = "2x4g";
+            rl.Add(vbG);
+            vbG.Rotate(0, 1, 0, 0);
+            vbG.Rotate(0, 0, 1, 0);
+            vbG.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbG.Translate((float)(64 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
+
+            VertexBuffer vbH = twoByFour();
+            vbH.color = Color.Honeydew;
+            vbH.name = "2x4h";
+            rl.Add(vbH);
+            vbH.Rotate(0, 1, 0, 0);
+            vbH.Rotate(0, 0, 1, 0);
+            vbH.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbH.Translate((float)(80 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
+
+            VertexBuffer vbI = twoByFour();
+            vbI.color = Color.Gray;
+            vbI.name = "2x4i";
+            rl.Add(vbI);
+            vbI.Rotate(0, 1, 0, 0);
+            vbI.Rotate(0, 0, 1, 0);
+            vbI.Rotate(0, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbI.Translate((float)(94 * 0.125), -(float)(4 * 0.125), (float)(2 * 0.125));
+            
+
+            VertexBuffer vbJ = twoByFour();
+            vbJ.color = Color.Tan;
+            vbJ.name = "2x4j";
+            rl.Add(vbJ);
+            Thread.Sleep(sleepTime);
+            vbJ.Rotate(-(float)Math.PI / 2, 1, 0, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbJ.Rotate(-(float)Math.PI / 2, 0, 1, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbJ.Rotate(-(float)Math.PI / 2, 0, 0, 1);
+            Thread.Sleep(sleepTime);
+            Render();
+            vbJ.Translate(0, 0, (float)(98*0.125));
+            
+
+            updateListView();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            rl.deleteAll();
             updateListView();
         }
     }
