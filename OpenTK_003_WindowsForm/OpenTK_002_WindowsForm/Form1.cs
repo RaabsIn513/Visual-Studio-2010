@@ -65,34 +65,43 @@ namespace OpenTK_002_WindowsForm
 
             GL.ClearColor(Color.Black);         // world background color
 
+            float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+            float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+            float[] light_position = { 0.0f, 0.0f, 10000.0f, 0.0f };
+
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, light_diffuse);
+            GL.Light(LightName.Light0, LightParameter.Position, light_position);
+
+            GL.Light(LightName.Light0, LightParameter.Position, new float[] { 1.0f, 1.0f, -0.5f });
+            GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            GL.Light(LightName.Light0, LightParameter.SpotExponent, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            GL.LightModel(LightModelParameter.LightModelTwoSide, 1);
+            GL.LightModel(LightModelParameter.LightModelLocalViewer, 1);
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
+
+            GL.Enable(EnableCap.Light0);
+            GL.Enable(EnableCap.ColorMaterial);
+
+            GL.Material(MaterialFace.Front, MaterialParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
+            GL.Material(MaterialFace.Front, MaterialParameter.Emission, new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
+
             SetupViewport();
             Application.Idle += Application_Idle; // press TAB twice after +=
 
             userTools = new tools();
-
-            //GL.EnableClientState(EnableCap.VertexArray);
-            //GL.EnableClientState(EnableCap.NormalArray);
-            //GL.VertexPointer(3, VertexPointerType.Float, 0, cube.data);
-            ////GL.NormalPointer(NormalPointerType.Float, 0, );
-
-            //// Enable Light 0 and set its parameters.
-            //GL.Light(LightName.Light0, LightParameter.Position, new float[] { -10.0f, -10.0f, -0.5f });
-            //GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
-            //GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 12.0f, 1.0f, 1.0f, 1.0f });
-            //GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
-            //GL.Light(LightName.Light0, LightParameter.SpotExponent, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
-            //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
-            //GL.LightModel(LightModelParameter.LightModelTwoSide, 1);
-            //GL.LightModel(LightModelParameter.LightModelLocalViewer, 1);
-            //GL.Enable(EnableCap.Lighting);
-            //GL.Enable(EnableCap.Light0);
-
-            //// Use GL.Material to set your object's material parameters.
-            //GL.Material(MaterialFace.Front, MaterialParameter.Ambient, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
-            //GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
-            //GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 1.0f, 1.0f, 1.0f, 1.0f });
-            //GL.Material(MaterialFace.Front, MaterialParameter.Emission, new float[] { 0.0f, 0.0f, 0.0f, 1.0f });
-
+            
+        
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -145,6 +154,8 @@ namespace OpenTK_002_WindowsForm
             Matrix4 perpective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 64);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perpective);
+
+
         }
 
         private void Render()
@@ -166,7 +177,7 @@ namespace OpenTK_002_WindowsForm
             Axis.drawOrigin();
 
             rl.Render();
-
+            GL.PushAttrib(OpenTK.Graphics.OpenGL.AttribMask.LightingBit);
             GL.PushMatrix();
 
             if (!ds.busyDrawing())
@@ -596,6 +607,14 @@ namespace OpenTK_002_WindowsForm
             for (int i = 0; i < listView1.Items.Count; i++)
                 listView1.Items[i].BackColor = ds.getByIndex(i).propColor;
         }
+
+        public void updateListView()
+        {
+            listView1.Items.Clear();
+            listView1.Items.AddRange(rl.forListViewCtrl().ToArray());
+            for (int i = 0; i < listView1.Items.Count; i++)
+                listView1.Items[i].BackColor = rl[i].color;
+        }
         #endregion
 
         #region OnClosing
@@ -608,8 +627,7 @@ namespace OpenTK_002_WindowsForm
         }
 
         #endregion
-
-
+        
         #region private void DrawCube()
 
         private void DrawCube()
@@ -657,14 +675,47 @@ namespace OpenTK_002_WindowsForm
 
         #endregion
 
+        #region track bar controls
+
         private void tbar_rotateX_ValueChanged(object sender, EventArgs e)
         {
             int value = tbar_rotateX.Value;
-            int angleSnap = 10;
-            //if (((value - 0) <= angleSnap) || ((value + 0) <= angleSnap))
-            //    value = 0;
-            //else
-                magnitudeX = value;
+            int angleSnap = 5;
+            if ((Math.Abs(value) < angleSnap) && (Math.Abs(value) > -angleSnap))
+                value = 0;
+            if ((Math.Abs(value) < (45 + angleSnap)) && (Math.Abs(value) > (45 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -45;
+                else
+                    value = 45;
+            }
+            if ((Math.Abs(value) < (90 + angleSnap)) && (Math.Abs(value) > (90 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -90;
+                else
+                    value = 90;
+            }
+            if ((Math.Abs(value) < (135 + angleSnap)) && (Math.Abs(value) > (135 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -135;
+                else
+                    value = 135;
+            }
+            if ((Math.Abs(value) < (180 + angleSnap)) && (Math.Abs(value) > (180 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -180;
+                else
+                    value = 180;
+            }
+
+            
+
+            magnitudeX = value;
+            tbar_rotateX.Value = value;
             lab_Xrotate.Text = "X Rotation: " + value;
         }
 
@@ -673,6 +724,40 @@ namespace OpenTK_002_WindowsForm
             int value = tbar_rotateY.Value;
             magnitudeY = value;
 
+            int angleSnap = 5;
+            if ((Math.Abs(value) < angleSnap) && (Math.Abs(value) > -angleSnap))
+                value = 0;
+            if ((Math.Abs(value) < (45 + angleSnap)) && (Math.Abs(value) > (45 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -45;
+                else
+                    value = 45;
+            }
+            if ((Math.Abs(value) < (90 + angleSnap)) && (Math.Abs(value) > (90 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -90;
+                else
+                    value = 90;
+            }
+            if ((Math.Abs(value) < (135 + angleSnap)) && (Math.Abs(value) > (135 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -135;
+                else
+                    value = 135;
+            }
+            if ((Math.Abs(value) < (180 + angleSnap)) && (Math.Abs(value) > (180 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -180;
+                else
+                    value = 180;
+            }
+
+            magnitudeY = value;
+            tbar_rotateY.Value = value;
             lab_Yrotate.Text = "Y Rotation: " + value;
         }
 
@@ -681,8 +766,44 @@ namespace OpenTK_002_WindowsForm
             int value = tbar_rotateZ.Value;
             magnitudeZ = value;
 
+            int angleSnap = 5;
+            if ((Math.Abs(value) < angleSnap) && (Math.Abs(value) > -angleSnap))
+                value = 0;
+            if ((Math.Abs(value) < (45 + angleSnap)) && (Math.Abs(value) > (45 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -45;
+                else
+                    value = 45;
+            }
+            if ((Math.Abs(value) < (90 + angleSnap)) && (Math.Abs(value) > (90 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -90;
+                else
+                    value = 90;
+            }
+            if ((Math.Abs(value) < (135 + angleSnap)) && (Math.Abs(value) > (135 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -135;
+                else
+                    value = 135;
+            }
+            if ((Math.Abs(value) < (180 + angleSnap)) && (Math.Abs(value) > (180 - angleSnap)))
+            {
+                if (value < 0) // if negative
+                    value = -180;
+                else
+                    value = 180;
+            }
+
+            magnitudeZ = value;
+            tbar_rotateZ.Value = value;
             lab_Zrotate.Text = "Z Rotation: " + value;
         }
+
+        #endregion
 
         private void btn_HOME_coord_Click(object sender, EventArgs e)
         {
@@ -692,14 +813,6 @@ namespace OpenTK_002_WindowsForm
             tbar_rotateX.Value = 0;
             tbar_rotateY.Value = 0;
             tbar_rotateZ.Value = 0;
-        }
-
-        public void updateListView()
-        {
-            listView1.Items.Clear();
-            listView1.Items.AddRange(rl.forListViewCtrl().ToArray());
-            for (int i = 0; i < listView1.Items.Count; i++)
-                listView1.Items[i].BackColor = rl[i].color;
         }
 
         private void btn_buildWall(object sender, EventArgs e)

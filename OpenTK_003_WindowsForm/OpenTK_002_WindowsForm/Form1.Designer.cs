@@ -157,7 +157,7 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(4, 64);
+            this.listView1.Location = new System.Drawing.Point(4, 66);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(154, 177);
             this.listView1.TabIndex = 14;

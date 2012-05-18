@@ -10,11 +10,23 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 using System.Threading;
+using OpenTK.Platform;
 
 namespace OpenTK_002_WindowsForm
 {
     class renderList : List<VertexBuffer>
     {
+        private bool _listLighting = false;
+
+        public bool listLighting
+        {
+            get
+            {
+                return _listLighting;
+            }
+            set { _listLighting = value; }
+        }
+
         public string[] NamesInList()
         {
             List<string> result = new List<string>();
@@ -33,7 +45,20 @@ namespace OpenTK_002_WindowsForm
         public void Render()
         {
             for (int i = 0; i < this.Count; i++)
+            {
                 this[i].Render();
+                if (true)
+                {
+                    int idk = this[i].id;
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, idk);
+                    
+                    // Set the Pointer to the current bound array describing how the data ia stored
+                    GL.NormalPointer(NormalPointerType.Float, OpenTK.Vector3.SizeInBytes, IntPtr.Zero);
+
+                    // Enable the client state so it will use this array buffer pointer
+                    GL.EnableClientState(EnableCap.NormalArray);
+                }
+            }
         }
 
         public List<ListViewItem> forListViewCtrl()
