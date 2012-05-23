@@ -145,6 +145,26 @@ namespace OpenTK_002_WindowsForm
         {
             OpenTK.GLControl c = glControl1;
 
+            float[] mat_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+            float[] mat_shininess = { 50.0f };
+            float[] light_position = { 1.0f, 1.0f, 1.0f, 0.0f };
+            float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+            //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            //GL.ShadeModel(OpenTK.Graphics.OpenGL.ShadingModel.Smooth);
+
+            GL.Material(OpenTK.Graphics.OpenGL.MaterialFace.Front, OpenTK.Graphics.OpenGL.MaterialParameter.Specular, mat_specular);
+            GL.Material(OpenTK.Graphics.OpenGL.MaterialFace.Front, OpenTK.Graphics.OpenGL.MaterialParameter.Shininess, mat_shininess);
+            GL.Light(OpenTK.Graphics.OpenGL.LightName.Light0, OpenTK.Graphics.OpenGL.LightParameter.Position, light_position);
+            GL.Light(OpenTK.Graphics.OpenGL.LightName.Light0, OpenTK.Graphics.OpenGL.LightParameter.Ambient, light_ambient);
+            GL.Light(OpenTK.Graphics.OpenGL.LightName.Light0, OpenTK.Graphics.OpenGL.LightParameter.Diffuse, mat_specular);
+
+            //GL.Enable(OpenTK.Graphics.OpenGL.EnableCap.Lighting);
+            //GL.Enable(EnableCap.Light0);
+            //GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.ColorMaterial);
+            //GL.Enable(EnableCap.CullFace);           
+
             if (c.ClientSize.Height == 0)
                 c.ClientSize = new System.Drawing.Size(c.ClientSize.Width, 1);
 
@@ -155,7 +175,14 @@ namespace OpenTK_002_WindowsForm
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perpective);
 
-
+            rl.Add(Block(2, 2, 2));
+            rl.Add(Block(2, 2, -2));
+            rl.Add(Block(2, -2, 2));
+            rl.Add(Block(2, -2,-2));
+            rl.Add(Block(-2, 2, 2));
+            rl.Add(Block(-2, 2, -2));
+            rl.Add(Block(-2, -2, 2));
+            rl.Add(Block(-2, -2, -2));
         }
 
         private void Render()
@@ -179,6 +206,8 @@ namespace OpenTK_002_WindowsForm
             rl.Render();
             GL.PushAttrib(OpenTK.Graphics.OpenGL.AttribMask.LightingBit);
             GL.PushMatrix();
+
+            
 
             if (!ds.busyDrawing())
                 glControl1.SwapBuffers();            
@@ -243,25 +272,51 @@ namespace OpenTK_002_WindowsForm
 
         private void glControl1_KeyDown(object sender, KeyEventArgs e)
         {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+            VertexBuffer vb = new VertexBuffer();
+            if (selectedItem.Count == 1)
+            {
+                string selectedID = selectedItem[0].SubItems[0].Text;
+                vb = rl.getByID(Convert.ToInt32(selectedID));
+            }
+            
             switch (e.KeyCode)
             {
                 case Keys.A:
-                    xWCS += 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(0.5f, 0, 0);
+                    else
+                        xWCS += 1;
                     break;
                 case Keys.D:
-                    xWCS -= 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(-0.5f, 0, 0);
+                    else
+                        xWCS -= 1;
                     break;
                 case Keys.S:
-                    yWCS += 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(0, 0.5f, 0);
+                    else
+                        yWCS += 1;
                     break;
                 case Keys.W:
-                    yWCS -= 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(0, -0.5f, 0);
+                    else
+                        yWCS -= 1;
                     break;
                 case Keys.E:
-                    zWCS += 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(0, 0, 0.5f);
+                    else
+                        zWCS += 1;
                     break;
                 case Keys.Q:
-                    zWCS -= 1;
+                    if (userTools.CurrentAction == "MOVE")
+                        vb.Translate(0, 0, -0.5f);
+                    else
+                        zWCS -= 1;
                     break;
                 case Keys.H:
                     userTools.UserPan = true;
@@ -598,6 +653,25 @@ namespace OpenTK_002_WindowsForm
                 rl.getByID(Convert.ToInt32(selItems[i].SubItems[0].Text.ToString())).isSelected = true; // set as selected
             }
 
+        }
+
+        private void listView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+                if (selectedItem.Count >= 1)
+                {
+                    for (int i = 0; i < selectedItem.Count; i++)
+                    {
+                        int ID = Convert.ToInt32(selectedItem[i].SubItems[0].Text);
+                        rl.deleteByID(ID);
+                    }
+                }
+                updateListView();
+            }
+            
         }
 
         public void refreshListView1()
@@ -944,5 +1018,40 @@ namespace OpenTK_002_WindowsForm
             rl.deleteAll();
             updateListView();
         }
+
+        private void btn_move_obj_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                if (userTools.CurrentAction == "MOVE")
+                {
+                    string selectedID = selectedItem[0].SubItems[0].Text;
+                    VertexBuffer vb = rl.getByID(Convert.ToInt32(selectedID));
+                    //object vb_asObject = (object)vb;
+                    //propertiesDialog dia = new propertiesDialog(vb_asObject);
+                    //dia.ShowDialog(this);
+                    //VertexBuffer vb2 = (VertexBuffer)dia.getResult();
+                    //rl.replaceByID(Convert.ToInt32(selectedID), vb2);
+                    //vb.Translate(1.5f, 1.5f, 0);
+                    userTools.CurrentAction = null;
+                    btn_move_obj.BackColor = Color.Black;
+                }
+                else
+                {
+                    userTools.CurrentAction = "MOVE";
+                    btn_move_obj.BackColor = Color.White;
+                }
+                //updateListView();            
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }

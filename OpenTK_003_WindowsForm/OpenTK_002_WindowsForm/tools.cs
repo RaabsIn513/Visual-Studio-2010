@@ -8,6 +8,7 @@ namespace OpenTK_002_WindowsForm
     class tools
     {
         private static string selectedTool = null;
+        private static string selectedAction = null;
         private bool _pan;
         private bool _rotate;
 
@@ -156,11 +157,27 @@ namespace OpenTK_002_WindowsForm
                     selectedTool = "USER_ROTATE";
             }
         }
-        
 
         public void deselectAllTools()
         {
             selectedTool = null;
+        }
+
+        public string CurrentAction
+        {
+            get { return selectedAction; }
+            set 
+            {
+                switch (value)
+                {
+                    case "MOVE":
+                        selectedAction = "MOVE";
+                        break;
+                    default:
+                        selectedAction = null;
+                        break;
+                }
+            }
         }
     }
 }

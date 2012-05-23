@@ -55,6 +55,7 @@
             this.lab_Xrotate = new System.Windows.Forms.Label();
             this.btn_HOME_coord = new System.Windows.Forms.Button();
             this.btn_2x4 = new System.Windows.Forms.Button();
+            this.btn_move_obj = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateY)).BeginInit();
@@ -144,6 +145,7 @@
             this.button2.TabIndex = 13;
             this.button2.Text = "deselect";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // listView1
             // 
@@ -164,6 +166,7 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
             this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
@@ -323,11 +326,23 @@
             this.btn_2x4.UseVisualStyleBackColor = true;
             this.btn_2x4.Click += new System.EventHandler(this.btn_buildWall);
             // 
+            // btn_move_obj
+            // 
+            this.btn_move_obj.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btn_move_obj.Location = new System.Drawing.Point(4, 276);
+            this.btn_move_obj.Name = "btn_move_obj";
+            this.btn_move_obj.Size = new System.Drawing.Size(75, 23);
+            this.btn_move_obj.TabIndex = 29;
+            this.btn_move_obj.Text = "move";
+            this.btn_move_obj.UseVisualStyleBackColor = true;
+            this.btn_move_obj.Click += new System.EventHandler(this.btn_move_obj_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1058, 430);
+            this.Controls.Add(this.btn_move_obj);
             this.Controls.Add(this.btn_2x4);
             this.Controls.Add(this.btn_HOME_coord);
             this.Controls.Add(this.lab_Xrotate);
@@ -385,6 +400,7 @@
         private System.Windows.Forms.Label lab_Xrotate;
         private System.Windows.Forms.Button btn_HOME_coord;
         private System.Windows.Forms.Button btn_2x4;
+        private System.Windows.Forms.Button btn_move_obj;
     }
 }
 
