@@ -49,7 +49,7 @@ namespace OpenTK_002_WindowsForm
         RandomNumberGenerator rndGen = System.Security.Cryptography.RandomNumberGenerator.Create();
         Matrix4 lookat;
         renderList rl = new renderList();
-        VertexBuffer cube;
+        //VertexBuffer cube;
         public Form1()
         {
             InitializeComponent();
@@ -145,13 +145,13 @@ namespace OpenTK_002_WindowsForm
         {
             OpenTK.GLControl c = glControl1;
 
-            float[] mat_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-            float[] mat_shininess = { 50.0f };
-            float[] light_position = { 1.0f, 1.0f, 1.0f, 0.0f };
+            float[] mat_specular = { 1.4f, 1.4f, 1.4f, 1.0f };
+            float[] mat_shininess = { 25.0f };
+            float[] light_position = { 5.0f, 5.0f, 5.0f, 0.0f };
             float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
 
-            //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            //GL.ShadeModel(OpenTK.Graphics.OpenGL.ShadingModel.Smooth);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            GL.ShadeModel(OpenTK.Graphics.OpenGL.ShadingModel.Smooth);
 
             GL.Material(OpenTK.Graphics.OpenGL.MaterialFace.Front, OpenTK.Graphics.OpenGL.MaterialParameter.Specular, mat_specular);
             GL.Material(OpenTK.Graphics.OpenGL.MaterialFace.Front, OpenTK.Graphics.OpenGL.MaterialParameter.Shininess, mat_shininess);
@@ -159,11 +159,11 @@ namespace OpenTK_002_WindowsForm
             GL.Light(OpenTK.Graphics.OpenGL.LightName.Light0, OpenTK.Graphics.OpenGL.LightParameter.Ambient, light_ambient);
             GL.Light(OpenTK.Graphics.OpenGL.LightName.Light0, OpenTK.Graphics.OpenGL.LightParameter.Diffuse, mat_specular);
 
-            //GL.Enable(OpenTK.Graphics.OpenGL.EnableCap.Lighting);
-            //GL.Enable(EnableCap.Light0);
-            //GL.Enable(EnableCap.DepthTest);
-            //GL.Enable(EnableCap.ColorMaterial);
-            //GL.Enable(EnableCap.CullFace);           
+            GL.Enable(OpenTK.Graphics.OpenGL.EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.ColorMaterial);
+            GL.Enable(EnableCap.CullFace);           
 
             if (c.ClientSize.Height == 0)
                 c.ClientSize = new System.Drawing.Size(c.ClientSize.Width, 1);
@@ -175,14 +175,7 @@ namespace OpenTK_002_WindowsForm
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perpective);
 
-            rl.Add(Block(2, 2, 2));
-            rl.Add(Block(2, 2, -2));
-            rl.Add(Block(2, -2, 2));
-            rl.Add(Block(2, -2,-2));
-            rl.Add(Block(-2, 2, 2));
-            rl.Add(Block(-2, 2, -2));
-            rl.Add(Block(-2, -2, 2));
-            rl.Add(Block(-2, -2, -2));
+            //rl.Add(Block(2, 2, 2));
         }
 
         private void Render()
@@ -204,6 +197,7 @@ namespace OpenTK_002_WindowsForm
             Axis.drawOrigin();
 
             rl.Render();
+            //cube();
             GL.PushAttrib(OpenTK.Graphics.OpenGL.AttribMask.LightingBit);
             GL.PushMatrix();
 
@@ -231,34 +225,118 @@ namespace OpenTK_002_WindowsForm
             GL.Color3(Color.Beige);
             VertexBuffer result = new VertexBuffer();
             Vertex[] data = new Vertex[24];
-
+            
+            //Bottom Face
             data[0].Position = new Vector3(0, 0, 0);
             data[1].Position = new Vector3(0, length, 0);
             data[2].Position = new Vector3(width, length, 0);
             data[3].Position = new Vector3(width, 0, 0);
+            data[0].Normal = VertexBuffer.getNormalVector(data[0].Position, data[1].Position);
+            data[1].Normal = VertexBuffer.getNormalVector(data[1].Position, data[2].Position);
+            data[2].Normal = VertexBuffer.getNormalVector(data[2].Position, data[3].Position);
+            data[3].Normal = VertexBuffer.getNormalVector(data[3].Position, data[0].Position);
+            
+            // Left face
             data[4].Position = new Vector3(0, 0, 0);
             data[5].Position = new Vector3(width, 0, 0);
             data[6].Position = new Vector3(width, 0, height);
             data[7].Position = new Vector3(0, 0, height);
+            data[4].Normal = VertexBuffer.getNormalVector(data[4].Position, data[5].Position);
+            data[5].Normal = VertexBuffer.getNormalVector(data[5].Position, data[6].Position);
+            data[6].Normal = VertexBuffer.getNormalVector(data[6].Position, data[7].Position);
+            data[7].Normal = VertexBuffer.getNormalVector(data[7].Position, data[4].Position);
+
+            // Back face
             data[8].Position = new Vector3(0, 0, 0);
             data[9].Position = new Vector3(0, 0, height);
             data[10].Position = new Vector3(0, length, height);
             data[11].Position = new Vector3(0, length, 0);
+            data[8].Normal = VertexBuffer.getNormalVector(data[8].Position, data[9].Position);
+            data[9].Normal = VertexBuffer.getNormalVector(data[9].Position, data[10].Position);
+            data[10].Normal = VertexBuffer.getNormalVector(data[10].Position, data[11].Position);
+            data[11].Normal = VertexBuffer.getNormalVector(data[11].Position, data[8].Position);
+
+            // Top face
             data[12].Position = new Vector3(0, 0, height);
             data[13].Position = new Vector3(width, 0, height);
             data[14].Position = new Vector3(width, length, height);
             data[15].Position = new Vector3(0, length, height);
+            data[12].Normal = VertexBuffer.getNormalVector(data[12].Position, data[13].Position);
+            data[13].Normal = VertexBuffer.getNormalVector(data[13].Position, data[14].Position);
+            data[14].Normal = VertexBuffer.getNormalVector(data[14].Position, data[15].Position);
+            data[15].Normal = VertexBuffer.getNormalVector(data[15].Position, data[12].Position);
+
+            // Right face
             data[16].Position = new Vector3(0, length, 0);
             data[17].Position = new Vector3(0, length, height);
             data[18].Position = new Vector3(width, length, height);
             data[19].Position = new Vector3(width, length, 0);
+            data[16].Normal = VertexBuffer.getNormalVector(data[16].Position, data[17].Position);
+            data[17].Normal = VertexBuffer.getNormalVector(data[17].Position, data[18].Position);
+            data[18].Normal = VertexBuffer.getNormalVector(data[18].Position, data[19].Position);
+            data[19].Normal = VertexBuffer.getNormalVector(data[19].Position, data[16].Position);
+
+            // Front face
             data[20].Position = new Vector3(width, 0, 0);
             data[21].Position = new Vector3(width, length, 0);
             data[22].Position = new Vector3(width, length, height);
             data[23].Position = new Vector3(width, 0, height);
+            data[20].Normal = VertexBuffer.getNormalVector(data[20].Position, data[21].Position);
+            data[21].Normal = VertexBuffer.getNormalVector(data[21].Position, data[22].Position);
+            data[22].Normal = VertexBuffer.getNormalVector(data[22].Position, data[23].Position);
+            data[23].Normal = VertexBuffer.getNormalVector(data[23].Position, data[20].Position);
 
             result.data = data;
             return result;
+        }
+        
+        private void cube()
+        {
+            GL.Begin(BeginMode.Quads);
+            {
+                // front face
+                GL.Normal3(0.0, 0.0, 1.0);
+                GL.Vertex3(-0.5, -0.5, 0.5);
+                GL.Vertex3(0.5, -0.5, 0.5);
+                GL.Vertex3(0.5, 0.5, 0.5);
+                GL.Vertex3(-0.5, 0.5, 0.5);
+ 
+                // back face
+                GL.Normal3(0.0, 0.0, -1.0);
+                GL.Vertex3(-0.5, -0.5, -0.5);
+                GL.Vertex3(-0.5, 0.5, -0.5);
+                GL.Vertex3(0.5, 0.5, -0.5);
+                GL.Vertex3(0.5, -0.5, -0.5);
+ 
+                // top face
+                GL.Normal3(0.0, 1.0, 0.0);
+                GL.Vertex3(-0.5, 0.5, -0.5);
+                GL.Vertex3(-0.5, 0.5, 0.5);
+                GL.Vertex3(0.5, 0.5, 0.5);
+                GL.Vertex3(0.5, 0.5, -0.5);
+ 
+                // bottom face
+                GL.Normal3(0.0, -1.0, 0.0);
+                GL.Vertex3(-0.5, -0.5, -0.5);
+                GL.Vertex3(0.5, -0.5, -0.5);
+                GL.Vertex3(0.5, -0.5, 0.5);
+                GL.Vertex3(-0.5, -0.5, 0.5);
+ 
+                // right face
+                GL.Normal3(1.0, 0.0, 1.0);
+                GL.Vertex3(0.5, -0.5, -0.5);
+                GL.Vertex3(0.5, 0.5, -0.5);
+                GL.Vertex3(0.5, 0.5, 0.5);
+                GL.Vertex3(0.5, -0.5, 0.5);
+ 
+                // left face
+                GL.Normal3(-1.0, 0.0, 0.0);
+                GL.Vertex3(-0.5, -0.5, -0.5);
+                GL.Vertex3(-0.5, -0.5, 0.5);
+                GL.Vertex3(-0.5, 0.5, 0.5);
+                GL.Vertex3(-0.5, 0.5, -0.5);
+            }
+            GL.End();
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -272,49 +350,47 @@ namespace OpenTK_002_WindowsForm
 
         private void glControl1_KeyDown(object sender, KeyEventArgs e)
         {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-            VertexBuffer vb = new VertexBuffer();
-            if (selectedItem.Count == 1)
-            {
-                string selectedID = selectedItem[0].SubItems[0].Text;
-                vb = rl.getByID(Convert.ToInt32(selectedID));
-            }
-            
             switch (e.KeyCode)
             {
+                case Keys.Enter:
+                    userTools.CurrentAction = null;         // user is done doing w/e action he/she was doing, ASDQWE keys will pan camera
+                    rl.place();                             // done moving
+                    rl.deselectAll();                       // delect all
+                    updateListView();                       // update list
+                    break;
                 case Keys.A:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(0.5f, 0, 0);
+                        rl.movingVBOs_Translate(0.5f, 0f, 0f);
                     else
                         xWCS += 1;
                     break;
                 case Keys.D:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(-0.5f, 0, 0);
+                        rl.movingVBOs_Translate(-0.5f, 0, 0);
                     else
                         xWCS -= 1;
                     break;
                 case Keys.S:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(0, 0.5f, 0);
+                        rl.movingVBOs_Translate(0, 0.5f, 0);
                     else
                         yWCS += 1;
                     break;
                 case Keys.W:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(0, -0.5f, 0);
+                        rl.movingVBOs_Translate(0, -0.5f, 0);
                     else
                         yWCS -= 1;
                     break;
                 case Keys.E:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(0, 0, 0.5f);
+                        rl.movingVBOs_Translate(0, 0, 0.5f);
                     else
                         zWCS += 1;
                     break;
                 case Keys.Q:
                     if (userTools.CurrentAction == "MOVE")
-                        vb.Translate(0, 0, -0.5f);
+                        rl.movingVBOs_Translate(0, 0, -0.5f);
                     else
                         zWCS -= 1;
                     break;
@@ -579,63 +655,7 @@ namespace OpenTK_002_WindowsForm
                 updateListView();
             }
         }
-        
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
 
-            if (selectedItem.Count == 1)
-            {
-                int ID = Convert.ToInt32(selectedItem[0].SubItems[0].Text);
-                rl.deleteByID(ID);
-            }
-            updateListView();
-        }
-
-        private void moveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-            
-            if (selectedItem.Count == 1)
-            {
-                //// Get the glPrimitive's ID and get the glPrimitive
-                //string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                //glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                //Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
-                //userTools.deselectAllTools();
-                //ds.setMoveProgressObj(selectedObj);
-                //ds.useMoveProgress = true;
-            }
-            MessageBox.Show("Not yet implemented");
-        }
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-
-            if (selectedItem.Count == 1)
-            {
-                //// Get the glPrimitive's ID and get the glPrimitive
-                //string primID = selectedItem[0].SubItems[0].Text;                       //Get the ID from the ID column
-                //glPrimitives selectedObj = ds.getPrimByID(Convert.ToInt32(primID));     //Get the glPrimitive Object from the list
-                //Cursor.Position = glControl1.PointToScreen(selectedObj.getGeoData()[0]);//Move the cursor to the first point of the object
-                //userTools.deselectAllTools();
-                //glPrimitives copy = new glPrimitives(selectedObj.getGeoData(), selectedObj.getPrimitiveType());
-                //ds.setMoveProgressObj(copy);
-                //ds.useMoveProgress = true;
-            }
-            MessageBox.Show("Not yet implemented");
-        }
-        
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
-            // The Opening of the context menu strip. 
-            // We need to determine what options to give the user
-            // eg. Points: color, size options
-            //     Lines: color, width, point (show,size,color) etc
-
-        }
-        
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListView.SelectedListViewItemCollection selItems = listView1.SelectedItems;
@@ -674,14 +694,6 @@ namespace OpenTK_002_WindowsForm
             
         }
 
-        public void refreshListView1()
-        {
-            listView1.Items.Clear();
-            listView1.Items.AddRange(ds.viewObjectListLVI().ToArray());
-            for (int i = 0; i < listView1.Items.Count; i++)
-                listView1.Items[i].BackColor = ds.getByIndex(i).propColor;
-        }
-
         public void updateListView()
         {
             listView1.Items.Clear();
@@ -689,6 +701,60 @@ namespace OpenTK_002_WindowsForm
             for (int i = 0; i < listView1.Items.Count; i++)
                 listView1.Items[i].BackColor = rl[i].color;
         }
+
+        #region listView Context Menu
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count == 1)
+            {
+                int ID = Convert.ToInt32(selectedItem[0].SubItems[0].Text);
+                rl.deleteByID(ID);
+            }
+            updateListView();
+        }
+
+        private void moveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count >= 1)
+            {
+                int[] IDs = new int[selectedItem.Count];
+                for (int i = 0; i < IDs.Length; i++)
+                    IDs[i] = Convert.ToInt32(selectedItem[i].SubItems[0].Text);
+                rl.moveByIDs(IDs);
+                userTools.CurrentAction = "MOVE";
+                glControl1.Focus();
+            }
+            //MessageBox.Show("Not yet implemented");
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count >= 1)
+            {
+                for (int i = 0; i < selectedItem.Count; i++)
+                    rl.copyByID(Convert.ToInt32(selectedItem[i].SubItems[0].Text));
+            }
+            updateListView();
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            // The Opening of the context menu strip. 
+            // We need to determine what options to give the user
+            // eg. Points: color, size options
+            //     Lines: color, width, point (show,size,color) etc
+
+        }
+
+        #endregion
+        
         #endregion
 
         #region OnClosing
@@ -891,7 +957,7 @@ namespace OpenTK_002_WindowsForm
 
         private void btn_buildWall(object sender, EventArgs e)
         {
-            int sleepTime = 250;
+            int sleepTime = 25;
             VertexBuffer vbA = twoByFour();
             vbA.color = Color.Brown;
             vbA.name = "2x4a";
@@ -1052,6 +1118,12 @@ namespace OpenTK_002_WindowsForm
 
         }
 
-
+        private void glControl1_Leave(object sender, EventArgs e)
+        {
+            userTools.CurrentAction = null;         // user is done doing w/e action he/she was doing, ASDQWE keys will pan camera
+            rl.place();                             // done moving
+            rl.deselectAll();                       // delect all
+            updateListView();                       // update list
+        }
     }
 }

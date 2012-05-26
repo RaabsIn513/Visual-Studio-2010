@@ -16,6 +16,8 @@ namespace OpenTK_002_WindowsForm
 {
     class renderList : List<VertexBuffer>
     {
+        public List<VertexBuffer> movingVBOs = new List<VertexBuffer>();
+        private bool _moveVBO = false;
         private bool _listLighting = false;
 
         public bool listLighting
@@ -25,6 +27,12 @@ namespace OpenTK_002_WindowsForm
                 return _listLighting;
             }
             set { _listLighting = value; }
+        }
+
+        public bool moveVBO
+        {
+            get { return _moveVBO; }
+            set { _moveVBO = value; }
         }
 
         public string[] NamesInList()
@@ -59,6 +67,11 @@ namespace OpenTK_002_WindowsForm
                     GL.EnableClientState(EnableCap.NormalArray);
                 }
             }
+            if (moveVBO)
+            {
+                for (int i = 0; i < movingVBOs.Count; i++)
+                    movingVBOs[i].Render();
+            }
         }
 
         public List<ListViewItem> forListViewCtrl()
@@ -73,6 +86,34 @@ namespace OpenTK_002_WindowsForm
                 result.Add(temp);
             }
             return result;
+        }
+
+        public void deselectAll()
+        {
+            for (int i = 0; i < this.Count; i++)
+                this[i].isSelected = false;
+        }
+
+        public int[] getSelectedIDs()
+        {
+            List<int> result = new List<int>();
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].isSelected == true)
+                    result.Add(this[i].id);
+            }
+            return result.ToArray();
+        }
+
+        public VertexBuffer[] getSelected()
+        {
+            List<VertexBuffer> result = new List<VertexBuffer>();
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].isSelected == true)
+                    result.Add(this[i]);
+            }
+            return result.ToArray();
         }
 
         public VertexBuffer getByID(int id)
@@ -108,6 +149,41 @@ namespace OpenTK_002_WindowsForm
         {
             this.deleteByID(id);
             this.Add(replaceWith);
+        }
+
+        public void copyByID(int id)
+        {
+            VertexBuffer newVBO = new VertexBuffer();
+            newVBO.data = this.getByID(id).data;
+            this.Add(newVBO);
+        }
+
+        public void moveByIDs(int[] id)
+        {
+            for (int i = 0; i < id.Length; i++)
+                movingVBOs.Add(getByID(id[i]));
+            for (int k = 0; k < id.Length; k++)
+                deleteByID(id[k]);
+            _moveVBO = true;
+        }
+
+        public void movingVBOs_Translate(float x, float y, float z)
+        {
+            for (int i = 0; i < movingVBOs.Count(); i++)
+                movingVBOs[i].Translate(x, y, z);
+        }
+
+        public void place()
+        {
+            if (_moveVBO)
+            {
+                for (int i = 0; i < movingVBOs.Count; i++)
+                {
+                    this.Add(movingVBOs[i]);
+                }
+            }
+            movingVBOs = new List<VertexBuffer>();
+            _moveVBO = false;
         }
 
         public void deleteAll()

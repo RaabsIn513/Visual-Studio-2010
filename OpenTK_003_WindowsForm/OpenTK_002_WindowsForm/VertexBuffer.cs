@@ -17,6 +17,7 @@ namespace OpenTK_002_WindowsForm
     {
         public Vector3 Position, Normal;
         public Vector2 TexCoord;
+        //public Color color;
 
         public static readonly int Stride = Marshal.SizeOf(default(Vertex));
     }
@@ -123,7 +124,19 @@ namespace OpenTK_002_WindowsForm
                 _data[i].Position = Vector3.Transform(_data[i].Position, Matrix4.Rotate(new Vector3(x, y, z), angle));
             this.data = _data;
         }
-        
+
+        public static Vector3 getNormalVector(Vector3 A, Vector3 B)
+        {
+            //Using Sarrus' Rule
+            A.Normalize();
+            B.Normalize();
+            float xComp = (A.Y * B.Z) - (A.Z * B.Y);
+            float yComp = (A.Z * B.X) - (A.X * B.Z);
+            float zComp = (A.X * B.Y) - (A.Y * B.X);
+
+            return new Vector3(xComp, yComp, zComp);
+        }
+
         public void Render()
         {
             GL.EnableClientState(ArrayCap.VertexArray);

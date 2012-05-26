@@ -79,6 +79,7 @@
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl1_KeyDown);
             this.glControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.glControl1_KeyUp);
+            this.glControl1.Leave += new System.EventHandler(this.glControl1_Leave);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseHover += new System.EventHandler(this.glControl1_MouseHover);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
@@ -161,7 +162,7 @@
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(4, 66);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(154, 177);
+            this.listView1.Size = new System.Drawing.Size(154, 213);
             this.listView1.TabIndex = 14;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -318,7 +319,7 @@
             // btn_2x4
             // 
             this.btn_2x4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_2x4.Location = new System.Drawing.Point(4, 247);
+            this.btn_2x4.Location = new System.Drawing.Point(4, 285);
             this.btn_2x4.Name = "btn_2x4";
             this.btn_2x4.Size = new System.Drawing.Size(75, 23);
             this.btn_2x4.TabIndex = 28;
@@ -329,7 +330,7 @@
             // btn_move_obj
             // 
             this.btn_move_obj.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btn_move_obj.Location = new System.Drawing.Point(4, 276);
+            this.btn_move_obj.Location = new System.Drawing.Point(4, 314);
             this.btn_move_obj.Name = "btn_move_obj";
             this.btn_move_obj.Size = new System.Drawing.Size(75, 23);
             this.btn_move_obj.TabIndex = 29;
