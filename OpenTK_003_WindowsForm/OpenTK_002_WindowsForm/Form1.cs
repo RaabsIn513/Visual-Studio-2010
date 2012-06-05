@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -28,18 +29,8 @@ namespace OpenTK_002_WindowsForm
         float yWCS = 0;
         float zWCS = 0;
         float zoomFactor = 1;
-        bool userLine = false;
-        bool userLoopLine = false;
-        bool userPoly = false;
-        bool userPoint = false;
-        bool userQuad = false;
-        bool userCircle = false;
         List<Point> userPoints = new List<Point>();
         List<Point> userPolyPts = new List<Point>();
-        //Point actualGL_pos;
-        static float rotateX = 0;
-        static float rotateY = 0;
-        static float rotateZ = 0;
         static float magnitudeX = 0;
         static float magnitudeY = 0;
         static float magnitudeZ = 0;
@@ -49,7 +40,10 @@ namespace OpenTK_002_WindowsForm
         RandomNumberGenerator rndGen = System.Security.Cryptography.RandomNumberGenerator.Create();
         Matrix4 lookat;
         renderList rl = new renderList();
-        //VertexBuffer cube;
+        int texture;
+        Bitmap bitmap = new Bitmap("E:/Visual Studio 2010/OpenTK_003_WindowsForm/OpenTK_002_WindowsForm/texture/wood24.bmp");
+
+
         public Form1()
         {
             InitializeComponent();
@@ -106,7 +100,7 @@ namespace OpenTK_002_WindowsForm
 
         void Application_Idle(object sender, EventArgs e)
         {
-            double milliseconds = ComputeTimeSlice();
+            double milliseconds = ComputeTimeSlice();       // measuring frames per second to display on UI
             Accumulate(milliseconds);
             Render();
         }
@@ -141,6 +135,31 @@ namespace OpenTK_002_WindowsForm
             glControl1.Invalidate();
         }
 
+        private void LoadTexture()
+        {
+            GL.Enable(EnableCap.Texture2D);
+
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            bitmap.UnlockBits(data);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+        }
+
+        /// <summary>
+        /// Sets up view port and openGL for lighting and textures
+        /// </summary>
         private void SetupViewport()
         {
             OpenTK.GLControl c = glControl1;
@@ -149,6 +168,10 @@ namespace OpenTK_002_WindowsForm
             float[] mat_shininess = { 25.0f };
             float[] light_position = { 5.0f, 5.0f, 5.0f, 0.0f };
             float[] light_ambient = { 0.5f, 0.5f, 0.5f, 1.0f };
+
+            if( cb_textureONOFF.Checked )
+                LoadTexture();
+            
 
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             GL.ShadeModel(OpenTK.Graphics.OpenGL.ShadingModel.Smooth);
@@ -163,7 +186,7 @@ namespace OpenTK_002_WindowsForm
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.ColorMaterial);
-            GL.Enable(EnableCap.CullFace);           
+            GL.Enable(EnableCap.CullFace);        
 
             if (c.ClientSize.Height == 0)
                 c.ClientSize = new System.Drawing.Size(c.ClientSize.Width, 1);
@@ -171,13 +194,14 @@ namespace OpenTK_002_WindowsForm
             GL.Viewport(0, 0, c.ClientSize.Width, c.ClientSize.Height);
 
             float aspect_ratio = Width / (float)Height;
-            Matrix4 perpective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 64);
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 128);
             GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perpective);
-
-            //rl.Add(Block(2, 2, 2));
+            GL.LoadMatrix(ref perspective);
         }
 
+        /// <summary>
+        /// Renders Vertex Buffer Objects contained within renderList rl
+        /// </summary>
         private void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -198,28 +222,42 @@ namespace OpenTK_002_WindowsForm
 
             rl.Render();
             //cube();
+            //float[] derp = new float[3];
+            //derp[0] = -3;
+            //derp[1] = 0;
+            //derp[2] = 1;
+            ////cylider(derp, 4, 1);
+            //Cylider(derp, 4, 1).Render();
             GL.PushAttrib(OpenTK.Graphics.OpenGL.AttribMask.LightingBit);
             GL.PushMatrix();
-
             
-
             if (!ds.busyDrawing())
                 glControl1.SwapBuffers();            
         }
 
+        /// <summary>
+        /// Creates a 2x4x96 block model. 
+        /// </summary>
+        /// <returns>2x4x96 block at 0,0,0</returns>
         private VertexBuffer twoByFour()
         {
-            // A 2x4 in inches
-            float width = 2.0f;
-            float length = 4.0f;
-            float height = 96f;
-
+            // A 2x4 in "inches"
+            float width = 2.0f;     // 2 in
+            float length = 4.0f;    // 4 in
+            float height = 96f;     // 8 ft
             VertexBuffer result = Block(width, length, height);
             result.Scale(0.125f);
             result.Translate(0, 0, 0);
             return result;
         }
 
+        /// <summary>
+        /// Creates a block using given dimensions
+        /// </summary>
+        /// <param name="width">Width of the block</param>
+        /// <param name="length">Length of the bock</param>
+        /// <param name="height">Height of the block</param>
+        /// <returns>Block with specified dimensions at 0,0,0</returns>
         private VertexBuffer Block(float width, float length, float height)
         {
             GL.Color3(Color.Beige);
@@ -227,6 +265,10 @@ namespace OpenTK_002_WindowsForm
             Vertex[] data = new Vertex[24];
             
             //Bottom Face
+            data[0].TexCoord = new Vector2(0.0f, 0.0f);
+            data[1].TexCoord = new Vector2(0.0f, 1.0f);
+            data[2].TexCoord = new Vector2(1.0f, 0.0f);
+            data[3].TexCoord = new Vector2(1.0f, 1.0f);
             data[0].Position = new Vector3(0, 0, 0);
             data[1].Position = new Vector3(0, length, 0);
             data[2].Position = new Vector3(width, length, 0);
@@ -237,6 +279,10 @@ namespace OpenTK_002_WindowsForm
             data[3].Normal = VertexBuffer.getNormalVector(data[3].Position, data[0].Position);
             
             // Left face
+            data[4].TexCoord = new Vector2(0.0f, 0.0f);
+            data[5].TexCoord = new Vector2(0.0f, 1.0f);
+            data[6].TexCoord = new Vector2(1.0f, 0.0f);
+            data[7].TexCoord = new Vector2(1.0f, 1.0f);
             data[4].Position = new Vector3(0, 0, 0);
             data[5].Position = new Vector3(width, 0, 0);
             data[6].Position = new Vector3(width, 0, height);
@@ -247,6 +293,10 @@ namespace OpenTK_002_WindowsForm
             data[7].Normal = VertexBuffer.getNormalVector(data[7].Position, data[4].Position);
 
             // Back face
+            data[8].TexCoord = new Vector2(0.0f, 0.0f);
+            data[9].TexCoord = new Vector2(0.0f, 1.0f);
+            data[10].TexCoord = new Vector2(1.0f, 0.0f);
+            data[11].TexCoord = new Vector2(1.0f, 1.0f);
             data[8].Position = new Vector3(0, 0, 0);
             data[9].Position = new Vector3(0, 0, height);
             data[10].Position = new Vector3(0, length, height);
@@ -257,6 +307,10 @@ namespace OpenTK_002_WindowsForm
             data[11].Normal = VertexBuffer.getNormalVector(data[11].Position, data[8].Position);
 
             // Top face
+            data[12].TexCoord = new Vector2(0.0f, 0.0f);
+            data[13].TexCoord = new Vector2(0.0f, 1.0f);
+            data[14].TexCoord = new Vector2(1.0f, 0.0f);
+            data[15].TexCoord = new Vector2(1.0f, 1.0f);
             data[12].Position = new Vector3(0, 0, height);
             data[13].Position = new Vector3(width, 0, height);
             data[14].Position = new Vector3(width, length, height);
@@ -267,6 +321,10 @@ namespace OpenTK_002_WindowsForm
             data[15].Normal = VertexBuffer.getNormalVector(data[15].Position, data[12].Position);
 
             // Right face
+            data[16].TexCoord = new Vector2(0.0f, 0.0f);
+            data[17].TexCoord = new Vector2(0.0f, 1.0f);
+            data[18].TexCoord = new Vector2(1.0f, 0.0f);
+            data[19].TexCoord = new Vector2(1.0f, 1.0f);
             data[16].Position = new Vector3(0, length, 0);
             data[17].Position = new Vector3(0, length, height);
             data[18].Position = new Vector3(width, length, height);
@@ -277,6 +335,10 @@ namespace OpenTK_002_WindowsForm
             data[19].Normal = VertexBuffer.getNormalVector(data[19].Position, data[16].Position);
 
             // Front face
+            data[20].TexCoord = new Vector2(0.0f, 0.0f);
+            data[21].TexCoord = new Vector2(0.0f, 1.0f);
+            data[22].TexCoord = new Vector2(1.0f, 0.0f);
+            data[23].TexCoord = new Vector2(1.0f, 1.0f);
             data[20].Position = new Vector3(width, 0, 0);
             data[21].Position = new Vector3(width, length, 0);
             data[22].Position = new Vector3(width, length, height);
@@ -286,10 +348,64 @@ namespace OpenTK_002_WindowsForm
             data[22].Normal = VertexBuffer.getNormalVector(data[22].Position, data[23].Position);
             data[23].Normal = VertexBuffer.getNormalVector(data[23].Position, data[20].Position);
 
+            result.type = "BLOCK";
             result.data = data;
             return result;
         }
-        
+
+        /// <summary>
+        /// Creates a Cylinder using given dimensions
+        /// </summary>
+        /// <param name="height">Height of the cylinder</param>
+        /// <param name="radius">Radius of the cylinder</param>
+        /// <returns>Cylinder with specified dimensions at 0,0,0</returns>
+        private VertexBuffer Cylider( float height, float radius)
+        {
+            VertexBuffer result = new VertexBuffer();
+            List<Vector3> points = new List<Vector3>();
+            List<Vertex> data = new List<Vertex>(); // must be even size. 
+            int segments = 12;  //Higher numbers improve quality 
+            List<Vertex> vertices = new List<Vertex>();
+            for (double y = 0; y < 2; y++)
+            {
+                for (double x = 0; x < segments; x++)
+                {
+                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+
+                    Vertex toAdd = new Vertex();
+                    toAdd.Position.X = (float)(radius * Math.Cos(theta) );
+                    toAdd.Position.Y = (float)(radius * Math.Sin(theta) );
+                    toAdd.Position.Z = (float)(height * y );
+                    toAdd.Normal = toAdd.Position;
+                    toAdd.Normal.Normalize();
+                    vertices.Add(toAdd);
+                }
+            }
+
+            var indices = new List<int>();
+            for (int x = 0; x < segments - 1; x++)
+            {
+                indices.Add(x);
+                indices.Add(x + segments);
+                indices.Add(x + segments + 1);
+
+                indices.Add(x + segments + 1);
+                indices.Add(x + 1);
+                indices.Add(x);
+            }
+
+            int i = 0;
+            foreach (int index in indices)
+            {
+                data.Add(vertices[index]);
+                i++;
+            }
+            
+            result.data = data.ToArray();
+            result.type = "CYLINDER";
+            return result;
+        }
+
         private void cube()
         {
             GL.Begin(BeginMode.Quads);
@@ -708,10 +824,10 @@ namespace OpenTK_002_WindowsForm
         {
             ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
 
-            if (selectedItem.Count == 1)
+            if (selectedItem.Count >= 1)
             {
-                int ID = Convert.ToInt32(selectedItem[0].SubItems[0].Text);
-                rl.deleteByID(ID);
+                for (int i = 0; i < selectedItem.Count; i++)
+                    rl.deleteByID(Convert.ToInt32(selectedItem[i].SubItems[0].Text));
             }
             updateListView();
         }
@@ -732,6 +848,22 @@ namespace OpenTK_002_WindowsForm
             //MessageBox.Show("Not yet implemented");
         }
 
+        private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
+
+            if (selectedItem.Count >= 1)
+            {
+                int[] IDs = new int[selectedItem.Count];
+                for (int i = 0; i < IDs.Length; i++)
+                    IDs[i] = Convert.ToInt32(selectedItem[i].SubItems[0].Text);
+                rl.rotateByIDs(IDs);
+                userTools.CurrentAction = "ROTATE";
+                glControl1.Focus();
+            }
+            //MessageBox.Show("Not yet implemented");
+        }
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
@@ -743,7 +875,7 @@ namespace OpenTK_002_WindowsForm
             }
             updateListView();
         }
-
+        
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
             // The Opening of the context menu strip. 
@@ -852,11 +984,18 @@ namespace OpenTK_002_WindowsForm
                     value = 180;
             }
 
-            
-
-            magnitudeX = value;
-            tbar_rotateX.Value = value;
-            lab_Xrotate.Text = "X Rotation: " + value;
+            if (userTools.CurrentAction == "ROTATE")
+            {
+                rl.rotatingVBOs_Rotate(value, 1, 0, 0);
+                //rl.place();
+                //rl.Render();
+            }
+            else
+            {
+                magnitudeX = value;
+                tbar_rotateX.Value = value;
+                lab_Xrotate.Text = "X Rotation: " + value;
+            }
         }
 
         private void tbar_rotateY_ValueChanged(object sender, EventArgs e)
@@ -955,23 +1094,129 @@ namespace OpenTK_002_WindowsForm
             tbar_rotateZ.Value = 0;
         }
 
+        /// <summary>
+        /// Builds chair from midterm test using block and cylinder objects.
+        /// Change sleepTime variable to change speed of build
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_buildChair_Click(object sender, EventArgs e)
+        {
+            int sleepTime = 25;     // so we can show the steps of each 2x4 that is created, rotated and translated
+            float scale = 0.125f;
+            VertexBuffer leg1 = Cylider( 32 * scale, 1.0f * scale);
+            leg1.color = Color.AliceBlue;
+            leg1.name = "LEG1";
+            rl.Add(leg1);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg1.Translate(0, 0, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg1.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
+
+            VertexBuffer leg2 = Cylider( 32 * scale, 1.0f * scale);
+            leg2.color = Color.Aqua;
+            leg2.name = "LEG2";
+            rl.Add(leg2);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg2.Translate(0, 26 * scale , 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg2.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
+
+            VertexBuffer leg3 = Cylider( 32 * scale, 1.0f * scale);
+            leg3.color = Color.Aquamarine;
+            leg3.name = "LEG3";
+            rl.Add(leg3);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg3.Translate(28 * scale , 26 * scale , 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg3.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
+
+            VertexBuffer leg4 = Cylider( 32 * scale, 1.0f * scale);
+            leg4.color = Color.MediumAquamarine;
+            leg4.name = "LEG4";
+            rl.Add(leg4);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg4.Translate(28 * scale, 0, 0);
+            Thread.Sleep(sleepTime);
+            Render();
+            leg4.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
+
+            VertexBuffer seat = Block(30 * scale, 28 * scale, 2 * scale);
+            seat.color = Color.BlueViolet;
+            seat.name = "SEAT";
+            rl.Add(seat);
+            Thread.Sleep(sleepTime);
+            Render();
+            seat.Translate(-1 * scale, -1 * scale, 32 * scale);
+            Thread.Sleep(sleepTime);
+            Render();
+            seat.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
+
+            VertexBuffer back = Block(25 * scale, 28 * scale, 2 * scale);
+            back.color = Color.Violet;
+            back.name = "BACK";
+            rl.Add(back);
+            Thread.Sleep(sleepTime);
+            Render();
+            back.Rotate(-(float)Math.PI/2, 1, 0, 0);   // rotate
+            Thread.Sleep(sleepTime);
+            Render();
+            back.Rotate((float)Math.PI / 2, 0, 0, 1);   // rotate
+            Thread.Sleep(sleepTime);
+            Render();
+            back.Translate(1 * scale, 34 * scale, 1 * scale);
+            Thread.Sleep(sleepTime);
+            Render();
+            back.Translate(-1 * scale, -34 * scale, -1 * scale);// move to origin to rotate it
+            back.Rotate(0.125f, 0, 0, 1);                       // rotate
+            back.Translate(1 * scale, 34 * scale, 1 * scale);   // then move back to original positon
+            Thread.Sleep(40);
+            Render();
+            back.Translate(-1 * scale, -34 * scale, -1 * scale);// move to origin to rotate it
+            back.Rotate(0.125f, 0, 0, 1);                       // rotate
+            back.Translate(1 * scale, 34 * scale, 1 * scale);   // then move back to original positon
+            Thread.Sleep(40);
+            Render();
+            back.Translate(-1 * scale, -34 * scale, -1 * scale);// move to origin to rotate it
+            back.Rotate(0.125f, 0, 0, 1);                       // rotate
+            back.Translate(1 * scale, 34 * scale, 1 * scale);   // then move back to original positon
+            Thread.Sleep(40);
+            Render();
+
+            updateListView();
+        }
+
+        /// <summary>
+        /// Builds the wall from homework 3 using 2x4 models derived from
+        /// block object. 
+        /// Change sleepTime to change speed of the build.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btn_buildWall(object sender, EventArgs e)
         {
-            int sleepTime = 25;
-            VertexBuffer vbA = twoByFour();
-            vbA.color = Color.Brown;
-            vbA.name = "2x4a";
-            rl.Add(vbA);
+            int sleepTime = 25;     // so we can show the steps of each 2x4 that is created, rotated and translated
+            VertexBuffer vbA = twoByFour();             // gets a cube that has been shaped and scaled to 2x4 dimensions
+            vbA.color = Color.Brown;                    // give it a unique color
+            vbA.name = "2x4a";                          // give it a unique name
+            rl.Add(vbA);                                // add this VBO to our render list
+            Thread.Sleep(sleepTime);                    // pause to show the process
+            vbA.Rotate(-(float)Math.PI / 2, 1, 0, 0);   // rotate
             Thread.Sleep(sleepTime);
-            vbA.Rotate(-(float)Math.PI / 2, 1, 0, 0);
+            Render();                                   // show the process
+            vbA.Rotate(-(float)Math.PI / 2, 0, 1, 0);   // rotate
             Thread.Sleep(sleepTime);
-            Render();
-            vbA.Rotate(-(float)Math.PI / 2, 0, 1, 0);
-            Thread.Sleep(sleepTime);
-            Render();
-            vbA.Rotate(-(float)Math.PI / 2, 0, 0, 1);
-            Thread.Sleep(sleepTime);
-            Render();
+            Render();                                   // show the process
+            vbA.Rotate(-(float)Math.PI / 2, 0, 0, 1);   // rotate
+            Thread.Sleep(sleepTime);            
+            Render();                                   // show the process
             vbA.Translate(0, 0, 0);
             
 
@@ -1074,56 +1319,41 @@ namespace OpenTK_002_WindowsForm
             Thread.Sleep(sleepTime);
             Render();
             vbJ.Translate(0, 0, (float)(98*0.125));
-            
 
             updateListView();
         }
 
+        /// <summary>
+        /// Delete all items in the renderList rl
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnClear_Click(object sender, EventArgs e)
         {
             rl.deleteAll();
             updateListView();
         }
 
-        private void btn_move_obj_Click(object sender, EventArgs e)
-        {
-            ListView.SelectedListViewItemCollection selectedItem = listView1.SelectedItems;
-
-            if (selectedItem.Count == 1)
-            {
-                if (userTools.CurrentAction == "MOVE")
-                {
-                    string selectedID = selectedItem[0].SubItems[0].Text;
-                    VertexBuffer vb = rl.getByID(Convert.ToInt32(selectedID));
-                    //object vb_asObject = (object)vb;
-                    //propertiesDialog dia = new propertiesDialog(vb_asObject);
-                    //dia.ShowDialog(this);
-                    //VertexBuffer vb2 = (VertexBuffer)dia.getResult();
-                    //rl.replaceByID(Convert.ToInt32(selectedID), vb2);
-                    //vb.Translate(1.5f, 1.5f, 0);
-                    userTools.CurrentAction = null;
-                    btn_move_obj.BackColor = Color.Black;
-                }
-                else
-                {
-                    userTools.CurrentAction = "MOVE";
-                    btn_move_obj.BackColor = Color.White;
-                }
-                //updateListView();            
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// When user interface focus leaves glControl1
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void glControl1_Leave(object sender, EventArgs e)
         {
-            userTools.CurrentAction = null;         // user is done doing w/e action he/she was doing, ASDQWE keys will pan camera
-            rl.place();                             // done moving
-            rl.deselectAll();                       // delect all
+            if (userTools.CurrentAction == "MOVE")
+            {
+                userTools.CurrentAction = null;         // user is done doing w/e action he/she was doing, ASDQWE keys will pan camera
+                rl.place();                             // done moving
+                rl.deselectAll();                       // delect all
+            }
             updateListView();                       // update list
         }
+
+        private void cb_textureONOFF_CheckedChanged(object sender, EventArgs e)
+        {
+            SetupViewport();
+        }
+
     }
 }

@@ -168,14 +168,20 @@ namespace OpenTK_002_WindowsForm
             get { return selectedAction; }
             set 
             {
-                switch (value)
+                if (value != null)
                 {
-                    case "MOVE":
-                        selectedAction = "MOVE";
-                        break;
-                    default:
-                        selectedAction = null;
-                        break;
+                    switch (value.ToUpper())
+                    {
+                        case "MOVE":
+                            selectedAction = "MOVE";
+                            break;
+                        case "ROTATE":
+                            selectedAction = "ROTATE";
+                            break;
+                        default:
+                            selectedAction = null;
+                            break;
+                    }
                 }
             }
         }

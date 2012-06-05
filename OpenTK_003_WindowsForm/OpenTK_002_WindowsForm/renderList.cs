@@ -17,7 +17,9 @@ namespace OpenTK_002_WindowsForm
     class renderList : List<VertexBuffer>
     {
         public List<VertexBuffer> movingVBOs = new List<VertexBuffer>();
+        public List<VertexBuffer> rotatingVBOs = new List<VertexBuffer>();
         private bool _moveVBO = false;
+        private bool _rotateVBO = false;
         private bool _listLighting = false;
 
         public bool listLighting
@@ -67,11 +69,12 @@ namespace OpenTK_002_WindowsForm
                     GL.EnableClientState(EnableCap.NormalArray);
                 }
             }
-            if (moveVBO)
-            {
-                for (int i = 0; i < movingVBOs.Count; i++)
-                    movingVBOs[i].Render();
-            }
+            
+            for (int i = 0; i < movingVBOs.Count; i++)
+                movingVBOs[i].Render();
+            for (int i = 0; i < rotatingVBOs.Count; i++)
+                rotatingVBOs[i].Render();
+           
         }
 
         public List<ListViewItem> forListViewCtrl()
@@ -167,23 +170,44 @@ namespace OpenTK_002_WindowsForm
             _moveVBO = true;
         }
 
+        public void rotateByIDs(int[] id)
+        {
+            for (int i = 0; i < id.Length; i++)
+                rotatingVBOs.Add(getByID(id[i]));
+            for (int k = 0; k < id.Length; k++)
+                deleteByID(id[k]);
+            _rotateVBO = true;
+        }
+
         public void movingVBOs_Translate(float x, float y, float z)
         {
             for (int i = 0; i < movingVBOs.Count(); i++)
                 movingVBOs[i].Translate(x, y, z);
         }
 
+        public void rotatingVBOs_Rotate(float angle, float x, float y, float z)
+        {
+            for (int i = 0; i < rotatingVBOs.Count(); i++)
+                rotatingVBOs[i].Rotate(angle* 0.0025f, x, y, z);
+        }
+
         public void place()
         {
-            if (_moveVBO)
+            if (_moveVBO || _rotateVBO)
             {
                 for (int i = 0; i < movingVBOs.Count; i++)
                 {
                     this.Add(movingVBOs[i]);
                 }
+                for (int i = 0; i < rotatingVBOs.Count; i++)
+                {
+                    this.Add(rotatingVBOs[i]);
+                }
             }
             movingVBOs = new List<VertexBuffer>();
+            rotatingVBOs = new List<VertexBuffer>();
             _moveVBO = false;
+            _rotateVBO = false;
         }
 
         public void deleteAll()

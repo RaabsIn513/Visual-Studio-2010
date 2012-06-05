@@ -32,6 +32,7 @@ namespace OpenTK_002_WindowsForm
         private Color _color = new Color();
         private Color _selectedColor = Color.Fuchsia;
         private bool _isSelected = false;
+        private string _type = "BLOCK";
 
         public int id
         {
@@ -68,6 +69,11 @@ namespace OpenTK_002_WindowsForm
         {
             get { return _isSelected; }
             set { _isSelected = value; }
+        }
+        public string type
+        {
+            get { return _type; }
+            set { _type = value; }
         }
 
         public VertexBuffer()
@@ -154,7 +160,16 @@ namespace OpenTK_002_WindowsForm
             else
                 GL.Color3(_color);
 
-            GL.DrawArrays(BeginMode.Quads, 0, this.length);
+            switch ( _type )
+            {
+                case "BLOCK":
+                    GL.DrawArrays(BeginMode.Quads, 0, this.length);
+                break;
+                case "CYLINDER":
+                    GL.DrawArrays(BeginMode.Triangles, 0, this.length);
+                break;
+
+            }
             GL.Color3(Color.White);
             GL.PointSize(5f);
             GL.DrawArrays(BeginMode.Points, 0, this.length);
