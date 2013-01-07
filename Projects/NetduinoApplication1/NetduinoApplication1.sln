@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetduinoApplication1", "NetduinoApplication1\NetduinoApplication1.csproj", "{F90D892B-D385-4097-92BA-CE1B5BE1CADF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F90D892B-D385-4097-92BA-CE1B5BE1CADF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

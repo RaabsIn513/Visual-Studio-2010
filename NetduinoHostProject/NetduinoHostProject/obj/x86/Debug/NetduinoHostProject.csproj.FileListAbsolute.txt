@@ -1,0 +1,9 @@
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\NetduinoHostProject.Form1.resources
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\NetduinoHostProject.Properties.Resources.resources
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\bin\Debug\NetduinoHostProject.exe
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\bin\Debug\NetduinoHostProject.pdb
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\NetduinoHostProject.exe
+E:\Visual Studio 2010\NetduinoHostProject\NetduinoHostProject\obj\x86\Debug\NetduinoHostProject.pdb

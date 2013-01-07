@@ -37,7 +37,6 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button2 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.ColumnHeader_ID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ColumnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -58,10 +57,14 @@
             this.btn_2x4 = new System.Windows.Forms.Button();
             this.cb_textureONOFF = new System.Windows.Forms.CheckBox();
             this.btn_buildChair = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateZ)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // glControl1
@@ -102,9 +105,9 @@
             // btnClear
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnClear.Location = new System.Drawing.Point(83, 235);
+            this.btnClear.Location = new System.Drawing.Point(4, 235);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.Size = new System.Drawing.Size(61, 23);
             this.btnClear.TabIndex = 8;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -161,9 +164,9 @@
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(4, 35);
+            this.listView1.Location = new System.Drawing.Point(4, 27);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(154, 194);
+            this.listView1.Size = new System.Drawing.Size(154, 202);
             this.listView1.TabIndex = 14;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -218,7 +221,7 @@
             // cb_vertexSnap
             // 
             this.cb_vertexSnap.AutoSize = true;
-            this.cb_vertexSnap.Location = new System.Drawing.Point(4, 12);
+            this.cb_vertexSnap.Location = new System.Drawing.Point(69, 239);
             this.cb_vertexSnap.Name = "cb_vertexSnap";
             this.cb_vertexSnap.Size = new System.Drawing.Size(81, 17);
             this.cb_vertexSnap.TabIndex = 19;
@@ -351,11 +354,37 @@
             this.btn_buildChair.UseVisualStyleBackColor = true;
             this.btn_buildChair.Click += new System.EventHandler(this.btn_buildChair_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1058, 24);
+            this.menuStrip1.TabIndex = 31;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportXMLToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // exportXMLToolStripMenuItem
+            // 
+            this.exportXMLToolStripMenuItem.Name = "exportXMLToolStripMenuItem";
+            this.exportXMLToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportXMLToolStripMenuItem.Text = "Export XML";
+            this.exportXMLToolStripMenuItem.Click += new System.EventHandler(this.exportXMLToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1058, 430);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.btn_buildChair);
             this.Controls.Add(this.cb_textureONOFF);
             this.Controls.Add(this.btn_HOME_coord);
@@ -366,15 +395,15 @@
             this.Controls.Add(this.lab_XY_ctrl_coordLabel);
             this.Controls.Add(this.tbar_rotateZ);
             this.Controls.Add(this.tbar_rotateY);
-            this.Controls.Add(this.cb_vertexSnap);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tbar_rotateX);
+            this.Controls.Add(this.cb_vertexSnap);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.button2);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Rob\'s OpenTK Drawing Program";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -382,6 +411,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbar_rotateZ)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -394,7 +425,6 @@
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader ColumnHeader_ID;
         private System.Windows.Forms.ColumnHeader ColumnHeaderName;
@@ -418,6 +448,9 @@
         private System.Windows.Forms.ToolStripMenuItem rotateToolStripMenuItem;
         private System.Windows.Forms.CheckBox cb_textureONOFF;
         private System.Windows.Forms.Button btn_buildChair;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportXMLToolStripMenuItem;
     }
 }
 

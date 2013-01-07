@@ -365,7 +365,8 @@ namespace OpenTK_002_WindowsForm
             List<Vector3> points = new List<Vector3>();
             List<Vertex> data = new List<Vertex>(); // must be even size. 
             int segments = 12;  //Higher numbers improve quality 
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vertex> vertices = new List<Vertex>();     // list to hold verticies
+            
             for (double y = 0; y < 2; y++)
             {
                 for (double x = 0; x < segments; x++)
@@ -1355,5 +1356,11 @@ namespace OpenTK_002_WindowsForm
             SetupViewport();
         }
 
+        #region menuStrip
+        private void exportXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            xmlExporter.export(rl);
+        }
+        #endregion
     }
 }
