@@ -75,26 +75,30 @@ namespace NetduinoControllerProject
                             // Create buffer and receive raw bytes.
                             byte[] bytes = new byte[connection.Available];
                             int count = connection.Receive(bytes);
-
+                            Byte[] bytesToSend;
                             // Convert to string, will include HTTP headers.
                             string rawData = new string(Encoding.UTF8.GetChars(bytes));
-                            
-                            Byte[] bytesToSend;
-                            switch (rawData)
-                            {
-                                case "derp":
-                                    bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                                    this.serverDel("Server Recieved: " + rawData);
-                                    this.serverDel("Server Sending: " + "ACK");
-                                    connection.Send(bytesToSend, bytesToSend.Length, 0);
-                                    break;
-                                default:
-                                    bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                                    this.serverDel("Server Recieved: " + rawData);
-                                    this.serverDel("Server Sending: " + "ACK");
-                                    connection.Send(bytesToSend, bytesToSend.Length, 0);
-                                    break;
-                            }
+                            Command aCmd = new Command(rawData, 1);
+                            bytesToSend = Encoding.UTF8.GetBytes("ACK");
+                            this.serverDel(aCmd.pinMap);
+                            connection.Send(bytesToSend, bytesToSend.Length, 0);
+                           
+                            //switch (rawData)
+                            //{
+                            //    case "derp":
+                            //        bytesToSend = Encoding.UTF8.GetBytes("ACK");
+                            //        this.serverDel("Server Recieved: " + rawData);
+                            //        this.serverDel("Server Sending: " + "ACK");
+                            //        
+                            //        connection.Send(bytesToSend, bytesToSend.Length, 0);
+                            //        break;
+                            //    default:
+                            //        bytesToSend = Encoding.UTF8.GetBytes("ACK");
+                            //        this.serverDel("Server Recieved: " + rawData);
+                            //        this.serverDel("Server Sending: " + "ACK");
+                            //        connection.Send(bytesToSend, bytesToSend.Length, 0);
+                            //        break;
+                            //}
                         }
                     }
                 }
@@ -132,7 +136,7 @@ namespace NetduinoControllerProject
         /// List of commands that can be handled by the server.
         /// Because of the limited support for generics on the .NET micro framework,
         /// this property is implemented as an ArrayList. Make sure you only add
-        /// objects of type Blinq.Netduino.WebCommand to this list.
+        /// objects of type Command to this list.
         /// </summary>
         public readonly System.Collections.ArrayList AllowedCommands = new System.Collections.ArrayList();
 

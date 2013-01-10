@@ -30,7 +30,7 @@ namespace NetduinoHostProject
         public Server(int port)
         {
             this.Port = port;
-            this.serverThread = new Thread(StartServer);
+            this.serverThread = new Thread(new ThreadStart(StartServer));
 
             Console.WriteLine("Control started on " + this.IPaddress.ToString() +  ":" + port.ToString());
         }
@@ -49,6 +49,7 @@ namespace NetduinoHostProject
             // start server
             cancel = false;
             serverThread.Start();
+            serverThread.Name = "Server Thread";
             Console.WriteLine("Started server in thread " + serverThread.GetHashCode().ToString());
         }
 
@@ -60,10 +61,11 @@ namespace NetduinoHostProject
             using (var server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 server.Bind(new IPEndPoint(IPAddress.Any, this.Port));
-                server.Listen(1);
+                server.Listen(10);
 
                 while (!cancel)
                 {
+                    //Thread.Sleep(1);
                     using (Socket connection = server.Accept())
                     {
                         if (connection.Poll(-1, SelectMode.SelectRead))

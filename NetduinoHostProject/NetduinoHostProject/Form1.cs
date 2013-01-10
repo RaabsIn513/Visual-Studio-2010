@@ -14,13 +14,12 @@ using Socket = System.Net.Sockets.Socket;
 namespace NetduinoHostProject
 {        
     public partial class Form1 : Form
-    {
-        
+    { 
         public delegate void updateUIDelegate(object obj);
-        public updateUIDelegate del;
+        public updateUIDelegate updateDataGridTable;
 
         private static string hostIP = "192.168.1.146";
-
+     
         public static Int32 txClientPort = 12001;
         public static Socket txClientSocket;
 
@@ -34,9 +33,7 @@ namespace NetduinoHostProject
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            dgv_clientMess.Columns.Add("Time", "Time");
-            dgv_clientMess.Columns.Add("Message", "Message");
-            del = new updateUIDelegate(UpdateDataGridView);
+            updateDataGridTable = new updateUIDelegate(UpdateDataGridView);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -50,17 +47,7 @@ namespace NetduinoHostProject
             server.Start();
             lab_statMessage.Text = "Server started";
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /// <summary>
-        /// role of the server
-        /// </summary>
-        /// <param name="port"></param>
-        /// <returns></returns>
+        
         private static Socket ConnectSocketToClient(Int32 port)
         {
             Socket result = new Socket(AddressFamily.InterNetwork,
@@ -79,23 +66,23 @@ namespace NetduinoHostProject
             // Getting Ip address of local machine...
             // First get the host name of local machine.
             strHostName = Dns.GetHostName();
-            Console.WriteLine("Local Machine's Host Name: " + strHostName);
+            //Console.WriteLine("Local Machine's Host Name: " + strHostName);
 
-            IPHostEntry remoteIP;
+            //IPHostEntry remoteIP;
 
             //using host name, get the IP address list..
             IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
             IPAddress[] addr = ipEntry.AddressList;
 
-            int i = 0;
-            while (i < addr.Length)
-            {
-                Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
-                //HostNames
-                remoteIP = Dns.GetHostEntry((addr[i]));
-                Console.WriteLine("HostName {0}: {1} ", i, remoteIP.HostName);
-                i++;
-            }
+            //int i = 0;
+            //while (i < addr.Length)
+            //{
+            //    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
+            //    //HostNames
+            //    remoteIP = Dns.GetHostEntry((addr[i]));
+            //    Console.WriteLine("HostName {0}: {1} ", i, remoteIP.HostName);
+            //    i++;
+            //}
 
             //IPHostEntry hostEntry = Dns.GetHostEntry(server);
 
@@ -108,62 +95,6 @@ namespace NetduinoHostProject
 
             return socket;
         }
-
-        //private void txWorkThread(object obj)
-        //{
-        //    txClientSocket = ConnectSocketToServer(hostIP, txClientPort);
-
-        //    while (txClientSocket.Connected)
-        //    {
-        //        // TODO: have method/delegate to when user sends something?
-        //        if (Send(txClientSocket, "derp") == true)
-        //        {
-        //            Console.WriteLine("Successfully sent message");
-        //            Thread.Sleep(1500);
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("Can't transmit to client socket...");
-        //            return;
-        //        }
-        //    }
-        //    return;
-        //}
-
-        //private void rxWorkThread(object obj)
-        //{
-        //    rxClientSocket = ConnectSocketToClient(rxClientPort);       // Accept on rxClientPort
-
-        //    updateUIDelegate del = (updateUIDelegate)obj;
-        //    string message = null;
-        //    const Int32 c_microsecondsPerSecond = 1000000;
-
-        //    // 'using' ensures that the client's socket gets closed.
-        //    using (rxClientSocket)
-        //    {
-        //        while (rxClientSocket.Connected)
-        //        {
-        //            // Wait for the client request to start to arrive.
-        //            Byte[] buffer = new Byte[1024];
-        //            if (rxClientSocket.Poll(5 * c_microsecondsPerSecond,
-        //                SelectMode.SelectRead))
-        //            {
-        //                // If 0 bytes in buffer, then the connection has been closed, 
-        //                // reset, or terminated.
-        //                if (rxClientSocket.Available == 0)
-        //                    return;
-
-        //                // Read the first chunk of the request
-        //                Int32 bytesRead = rxClientSocket.Receive(buffer,
-        //                    rxClientSocket.Available, SocketFlags.None);
-        //                message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-        //                del.Invoke(message);
-        //            }
-        //        }
-        //    }
-        //    return;
-        //}
 
         private void UpdateDataGridView(object obj)
         {
@@ -185,8 +116,9 @@ namespace NetduinoHostProject
             //text = processRxStr(text);
             // and update
             int rowNum = dgv_clientMess.Rows.Add();
-            dgv_clientMess.Rows[rowNum].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
-            dgv_clientMess.Rows[rowNum].Cells["Message"].Value = text;
+            this.dgv_clientMess.Rows[rowNum].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
+            this.dgv_clientMess.Rows[rowNum].Cells["Message"].Value = text;
+
         }
         
         private static bool Send(Socket soc, string message)
@@ -217,17 +149,39 @@ namespace NetduinoHostProject
 
         private void btn_SendMessage_Click(object sender, EventArgs e)
         {
+            sendToNetduino(this.textBox1.Text.ToString());
+            this.textBox1.Clear();
+        }
+
+        private void sendToNetduino(string message)
+        {
             Socket toRemServ = ConnectSocketToServer("192.168.1.147", 12001);
-            if (textBox1.Text != null || textBox1.Text != "")
+            if (message != null || message != "")
             {
-                Send(toRemServ, textBox1.Text.ToString());
                 int row = dgv_clientMess.Rows.Add();
-                dgv_clientMess.Rows[row].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
-                dgv_clientMess.Rows[row].Cells["Message"].Value = "Server Sending: " + textBox1.Text.ToString();
-                textBox1.Clear();
+                this.dgv_clientMess.Rows[row].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
+                this.dgv_clientMess.Rows[row].Cells["Message"].Value = "Server Sending: " + message;
+
+                if (Send(toRemServ, message))
+                {
+                    this.UpdateDataGridView("Server Recieved: ACK");
+                }
+                else
+                {
+                    this.UpdateDataGridView("Server Recieved: " + "NOTHING!");
+                }
             }
         }
 
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 13) //ENTER
+            {
+                sendToNetduino(this.textBox1.Text.ToString());
+
+                this.textBox1.Clear();
+            }
+        }
 
     }
 

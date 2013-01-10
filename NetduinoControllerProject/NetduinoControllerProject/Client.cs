@@ -46,12 +46,23 @@ namespace NetduinoControllerProject
                 using (client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
                 {
                     // TODO: try catch etc.
-                    IPAddress tServer = IPAddress.Parse(this.Server);
-                    client.Connect(new IPEndPoint(tServer, this.Port));
+                    try
+                    {
+                        client.SendTimeout = 5000;
+                        IPAddress tServer = IPAddress.Parse(this.Server);
+                        Debug.Print("Before Connect");
+                        client.Connect(new IPEndPoint(tServer, this.Port));
+                        Debug.Print("After Connect");
+                        Byte[] bytesToSend2 = Encoding.UTF8.GetBytes(message);
+                        client.SendTo(bytesToSend2, new IPEndPoint(tServer, this.Port));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Print(ex.ToString());
+                    }
 
-                    //this.running = true;
-                    Byte[] bytesToSend = Encoding.UTF8.GetBytes(message);
-                    client.Send(bytesToSend, bytesToSend.Length, 0);
+                    //Byte[] bytesToSend = Encoding.UTF8.GetBytes(message);
+                    //client.Send(bytesToSend, bytesToSend.Length, 0);
                     // Check if ACK
                     if (client.Poll(-1, SelectMode.SelectRead))
                     {

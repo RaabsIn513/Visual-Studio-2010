@@ -14,6 +14,23 @@ namespace NetduinoControllerProject
         {
             CommandString = commandString;
             ArgumentCount = argumentCount;
+
+            switch (commandString.ToLower())
+            {
+                case "green":
+                    pinMap = new int[] { 0, 1, 1 };
+                    break;
+                case "red":
+                    pinMap = new int[] { 1, 1, 0 };
+                    break;
+                case "amber":
+                    pinMap = new int[] { 0, 1, 0 };
+                    break;
+                default:
+                    pinMap = new int[] { 0, 1, 1 };
+                    break;                
+
+            }
         }
 
         /// <summary>
@@ -26,6 +43,7 @@ namespace NetduinoControllerProject
         /// </summary>
         public int ArgumentCount { get; set; }
 
+        public int[] pinMap { get; set; }
         /// <summary>
         /// When a command is received, this property holds the actual argument values.
         /// </summary>
