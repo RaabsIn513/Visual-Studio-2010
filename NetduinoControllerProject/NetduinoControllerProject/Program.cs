@@ -14,44 +14,49 @@ namespace NetduinoControllerProject
         static OutputPort onBoardLed = new OutputPort(Pins.ONBOARD_LED, false);
         public delegate void UpdateDebugOutputDelegate(object obj);
         public UpdateDebugOutputDelegate del;
-        static OutputPort lead0 = new OutputPort(Pins.GPIO_PIN_D8, false);
-        static OutputPort lead1 = new OutputPort(Pins.GPIO_PIN_D9, false);
-        static OutputPort lead2 = new OutputPort(Pins.GPIO_PIN_D10, false);
-        
+
+        private static Devices.RGO_LED led = new Devices.RGO_LED(
+            new OutputPort(Pins.GPIO_PIN_D8, false),
+            new OutputPort(Pins.GPIO_PIN_D9, false),
+            new OutputPort(Pins.GPIO_PIN_D10, false) );
+
+        //private static Devices.LCD_HD44780 = new Devices.LCD_HD44780(
+        //);
+
         public static void Main()
         {
             Server server = new Server(12001);
             Client client = new Client("192.168.1.147", 12000);
             
-            server.AllowedCommands.Add(new Command("setled", 1));
             server.serverDel = new Server.externThread(updatePinOutputs);
                        
             server.Start();
+
+            char aChar = 'A';
+            byte test = (byte)aChar;
+            byte addr1 = 1;
+            byte addr2 = 4;
+            byte addr3 = 8;
+            byte addr4 = 16;
+
+            bool fuck0 = ((test & addr1) > 0);
+            bool fuck1 = ((test & addr2) > 0);
+
             while (true)
             {
-                Debug.Print(DateTime.Now.ToLocalTime().ToString() + "\tNetduino running...\t" + server.IPaddress);
-                if (client.Send(DateTime.Now.ToLocalTime().ToString() + "\tNetduino running!..\t" + server.IPaddress))
+                Debug.Print(DateTime.Now.ToLocalTime().ToString() + "   Netduino running... " + server.IPaddress);
+                if (client.Send(DateTime.Now.ToLocalTime().ToString() + "- Netduino running(" + server.IPaddress + ")"))
                     Debug.Print("Message Sent and Acknowledged!");
                 Thread.Sleep(2500);
             }
         }
 
+
         private static void updatePinOutputs(object obj)
         {
-            // 
-            int[] pins = (int[])obj;
-            if (pins[0] == 1)
-                lead0.Write(true);
-            else
-                lead0.Write(false);
-            if (pins[1] == 1)
-                lead1.Write(true);
-            else
-                lead1.Write(false);
-            if (pins[2] == 1)
-                lead2.Write(true);
-            else
-                lead2.Write(false);
+            Command rxCMD = (Command)obj;
+
+            led.setCmd((object)rxCMD);
 
         }
 

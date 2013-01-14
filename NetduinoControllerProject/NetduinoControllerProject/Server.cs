@@ -78,27 +78,10 @@ namespace NetduinoControllerProject
                             Byte[] bytesToSend;
                             // Convert to string, will include HTTP headers.
                             string rawData = new string(Encoding.UTF8.GetChars(bytes));
-                            Command aCmd = new Command(rawData, 1);
+                            Command aCmd = new Command(rawData);
                             bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                            this.serverDel(aCmd.pinMap);
+                            this.serverDel(aCmd);
                             connection.Send(bytesToSend, bytesToSend.Length, 0);
-                           
-                            //switch (rawData)
-                            //{
-                            //    case "derp":
-                            //        bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                            //        this.serverDel("Server Recieved: " + rawData);
-                            //        this.serverDel("Server Sending: " + "ACK");
-                            //        
-                            //        connection.Send(bytesToSend, bytesToSend.Length, 0);
-                            //        break;
-                            //    default:
-                            //        bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                            //        this.serverDel("Server Recieved: " + rawData);
-                            //        this.serverDel("Server Sending: " + "ACK");
-                            //        connection.Send(bytesToSend, bytesToSend.Length, 0);
-                            //        break;
-                            //}
                         }
                     }
                 }

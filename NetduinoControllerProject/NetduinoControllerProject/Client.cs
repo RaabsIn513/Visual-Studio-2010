@@ -11,9 +11,9 @@ namespace NetduinoControllerProject
 {
     class Client
     {
-        private bool cancel = false;
-        private Thread clientThread = null;
-        private Socket client;
+        //private bool cancel = false;
+        //private Thread clientThread = null;
+        private static Socket client;
                 
         #region Constructors
 

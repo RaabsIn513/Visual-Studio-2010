@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Sockets;
 using Socket = System.Net.Sockets.Socket;
 
+
 namespace NetduinoHostProject
 {        
     public partial class Form1 : Form
@@ -115,9 +116,15 @@ namespace NetduinoHostProject
             string text = (string)obj;
             //text = processRxStr(text);
             // and update
-            int rowNum = dgv_clientMess.Rows.Add();
-            this.dgv_clientMess.Rows[rowNum].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
-            this.dgv_clientMess.Rows[rowNum].Cells["Message"].Value = text;
+            try
+            {
+                int rowNum = dgv_clientMess.Rows.Add();
+                this.dgv_clientMess.Rows[rowNum].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
+                this.dgv_clientMess.Rows[rowNum].Cells["Message"].Value = text;
+            }
+            catch (Exception ex)
+            {
+            }
 
         }
         

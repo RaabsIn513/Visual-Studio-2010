@@ -34,7 +34,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="CommandEventArgs.cs" />
+    <Compile Include="Devices.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
@@ -48,5 +48,7 @@
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino" />
     <Reference Include="System" />
+    <Reference Include="Toolbox.NETMF.Core, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Toolbox.NETMF.Hardware.Core, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
 </Project>

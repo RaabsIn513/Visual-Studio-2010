@@ -28,3 +28,15 @@ E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\obj\De
 E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\obj\Debug\be\NetduinoControllerProject.pdbx
 E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\obj\Debug\le\NetduinoControllerProject.pe
 E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\obj\Debug\le\NetduinoControllerProject.pdbx
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\LE\Toolbox.NETMF.Core.pe
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\LE\Toolbox.NETMF.Hardware.Core.pe
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\BE\Toolbox.NETMF.Core.pe
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\BE\Toolbox.NETMF.Hardware.Core.pe
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\LE\Toolbox.NETMF.Core.pdbx
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\LE\Toolbox.NETMF.Hardware.Core.pdbx
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\BE\Toolbox.NETMF.Core.pdbx
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\BE\Toolbox.NETMF.Hardware.Core.pdbx
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\Toolbox.NETMF.Core.dll
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\Toolbox.NETMF.Hardware.Core.dll
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\Toolbox.NETMF.Core.pdb
+E:\Visual Studio 2010\NetduinoControllerProject\NetduinoControllerProject\bin\Debug\Toolbox.NETMF.Hardware.Core.pdb
