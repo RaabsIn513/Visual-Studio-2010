@@ -80,8 +80,8 @@ namespace NetduinoControllerProject
                             string rawData = new string(Encoding.UTF8.GetChars(bytes));
                             Command aCmd = new Command(rawData);
                             bytesToSend = Encoding.UTF8.GetBytes("ACK");
-                            this.serverDel(aCmd);
-                            connection.Send(bytesToSend, bytesToSend.Length, 0);
+                            this.serverDel(aCmd);                                           // Alert another thread to handle the command. 
+                            connection.Send(bytesToSend, bytesToSend.Length, 0);            // Send the ACK
                         }
                     }
                 }

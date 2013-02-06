@@ -35,6 +35,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Devices.cs" />
+    <Compile Include="DevService.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

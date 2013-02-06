@@ -5,6 +5,8 @@ namespace NetduinoControllerProject
 {
     public class Command
     {
+        private bool iIsEmpty = true;
+        public bool isEmpty { get { return iIsEmpty; } }
         public string Device { get; set; }
         public string Action { get; set; }
 
@@ -29,12 +31,14 @@ namespace NetduinoControllerProject
                 this.Action = cmdParams[1];
                 this.Arguments = cmdParams[2].Split(',');
             }
+            this.iIsEmpty = false;
         }
 
         public Command()
         {
             this.Device = null;
             this.Action = null;
+            this.iIsEmpty = true;
         }
         
         /// <summary>

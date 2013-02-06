@@ -11,14 +11,74 @@ using Toolbox.NETMF.Hardware;
 namespace NetduinoControllerProject
 {
     public class Devices
-    {
+    {    
+        //public NetduinoControllerProject.Command cmd { get; set; }
+        private Thread serviceCtrl;
+        public delegate void setCommand(object obj);
+        public delegate void outputStatus(object obj);          // status output to another thread. 
+        public outputStatus status;
+        public delegate void inputCmd(object obj);
+        public static inputCmd serviceCmd;
+        private static inputCmd serviceNeededSignal;
+        //private delegate bool iCmdSig(object obj);
+        //private static iCmdSig internalCMDsignal;
+        private Command cmdInput = new Command();
+        public struct DeviceInfo
+        {
+            public string DisplayText { get; set; }
+            public string Name { get; set; }
+            public string Manufacturer { get; set; }
+            public string PartNumber { get; set; }
+            // other general information could go here;        
+        };
+        private bool iCancel = false;
+        private bool iCmdToService = false;
+
+        public bool Cancel 
+        {
+            get
+            {
+                return iCancel;
+            }
+            set
+            {
+                iCancel = value;
+            }
+        }
+
         public Devices()
         {
+            serviceCmd = service_aCmd;
+            this.serviceCtrl = new Thread(service_Thread);
         }
-        //public NetduinoControllerProject.Command cmd { get; set; }
-        public string DisplayName { get; set; }
-        public delegate void setCommand(object obj);
-        
+
+        public void Start()
+        {
+            this.serviceCtrl.Start();
+        }
+
+        public void service_Thread()
+        {
+            while (!iCancel)
+            {
+                while (iCmdToService)
+                {
+                    Debug.Print("Command being serviced here...");
+                    
+                    this.iCmdToService = false;
+                }
+                Thread.Sleep(10);
+            }
+        }
+
+        public void service_aCmd(object aCmd)
+        {
+            //lock (this.cmdInput)
+            //{
+                this.cmdInput = (Command)aCmd;
+                this.iCmdToService = true;
+            //}
+        }
 
         public class RGO_LED : Devices
         {
@@ -30,6 +90,8 @@ namespace NetduinoControllerProject
             public bool stopRequest = false;
             public setCommand setCmd;
             private Command iCmd = new Command("LED:off");
+            public  DeviceInfo deviceInfo;
+
             enum led_state
             {
                 OFF,
@@ -133,6 +195,10 @@ namespace NetduinoControllerProject
                         Thread.Sleep(timeOff);
                     }
                 }
+                else
+                {
+                    Debug.Print("The led '" + this.deviceInfo.Name + "' is not configured correctly and can not be used");
+                }
             }
 
             public void Off()
@@ -144,6 +210,10 @@ namespace NetduinoControllerProject
                     this.Pin1.Write(false);
                     this.Pin2.Write(false);
                     this.state = led_state.OFF;
+                }
+                else
+                {
+                    Debug.Print("The led '" + this.deviceInfo.Name + "' is not configured correctly and can not be used");
                 }
             }
             
@@ -157,6 +227,10 @@ namespace NetduinoControllerProject
                     this.Pin2.Write(true);
                     this.state = led_state.GREEN;
                 }
+                else
+                {
+                    Debug.Print("The led '" + this.deviceInfo.Name + "' is not configured correctly and can not be used");
+                }
             }
 
             public void Red()
@@ -169,6 +243,10 @@ namespace NetduinoControllerProject
                     this.Pin2.Write(false);
                     this.state = led_state.RED;
                 }
+                else
+                {
+                    Debug.Print("The led '" + this.deviceInfo.Name + "' is not configured correctly and can not be used");
+                }
             }
 
             public void Amber()
@@ -180,6 +258,10 @@ namespace NetduinoControllerProject
                     this.Pin1.Write(true);
                     this.Pin2.Write(false);
                     this.state = led_state.AMBER;
+                }
+                else
+                {
+                    Debug.Print("The led '" + this.deviceInfo.Name + "' is not configured correctly and can not be used");
                 }
             }
 
@@ -282,7 +364,7 @@ namespace NetduinoControllerProject
             private bool[] charToBitArray(char aChar)
             {
                 byte test = (byte)aChar;
-                bool[] result = bool[8];
+                bool[] result = new bool[8];
                 byte[] addresses = { 1, 2, 4, 8, 16, 32, 64, 128 };
                 
                 for( int i = 0; i < 8; i++ )
