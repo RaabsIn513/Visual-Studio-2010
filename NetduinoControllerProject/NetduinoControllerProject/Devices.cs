@@ -230,13 +230,13 @@ namespace NetduinoControllerProject
             isSet = true;
         }
 
-        private void On()
+        public void On()
         {
             drivePin.Write(true);
             pinState = true;
         }
 
-        private void Off()
+        public void Off()
         {
             drivePin.Write(false);
             pinState = false;

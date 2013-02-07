@@ -12,6 +12,7 @@ namespace NetduinoControllerProject
     class DevService
     {
         private Thread serviceCtrl;
+        private Thread perfCmdThd;
         public Devices[] deviceList = new Devices[4];
         public delegate void outputStatus(object obj);          // status output to another thread. 
         public outputStatus status;
@@ -20,8 +21,13 @@ namespace NetduinoControllerProject
         public static int maxCommandsToService = 5;
         public bool cancel = false;
         private Command cmdInput = new Command();
+        private Command currentCmd = new Command();
+        private Devices currentDev = new Devices();
+        private string result = null;
         private bool iCancel = false;
         static bool iCmdToService = false;
+
+        public int TimeOut_ms { get; set; }
 
         #region Constructor
         
@@ -29,6 +35,7 @@ namespace NetduinoControllerProject
         {
             serviceCmd = AcceptCmd;
             this.serviceCtrl = new Thread(service_Thread);
+            this.TimeOut_ms = 5000;                         // default value
         }
 
         #endregion
@@ -41,7 +48,7 @@ namespace NetduinoControllerProject
         {
             lock (this.cmdInput)
             {       // Possibly add to a Que structure for higher performance/less bottle neck
-                this.cmdInput = (Command)aCmd;
+                this.currentCmd = (Command)aCmd;
                 iCmdToService = true;
             }
         }
@@ -52,6 +59,7 @@ namespace NetduinoControllerProject
         public void Start()
         {
             this.serviceCtrl.Start();
+            this.perfCmdThd = new Thread(PerformActionThread);
         }
 
         /// <summary>
@@ -67,21 +75,13 @@ namespace NetduinoControllerProject
                 while (iCmdToService)
                 {
                     Debug.Print("Command being serviced here...");
-                    // Determine device
-                    Devices debugDev = getDeviceByID(this.cmdInput.DeviceID);
+                                        
+                    this.currentDev = getDeviceByID(this.cmdInput.DeviceID);        // Determine device
+                    this.perfCmdThd.Start();                                        // Perform action for the device
 
-                    string debugStr = debugDev.GetType().ToString();
-                    debugStr = debugDev.GetType().ToString().Split( '+' )[1];
-                    
-                    switch (debugStr)
-                    {
-                        case "RGO_LED":
-                            Devices.RGO_LED temp = (Devices.RGO_LED)debugDev;
-                            RGO_LED_ACTION(temp, this.cmdInput);
-                            break;
-                        default:
-                            break;
-                    }
+                    //if (this.perfCmdThd.Join(TimeOut_ms))                                 // get results after TimeOut_ms 
+                    //{
+                    //}
 
                     iCmdToService = false;
                 }
@@ -89,22 +89,63 @@ namespace NetduinoControllerProject
             }
         }
 
-        private void RGO_LED_ACTION(Devices.RGO_LED rgoled, Command cmd )
+        private void PerformActionThread()
         {
+            string debugStr = this.currentDev.GetType().ToString();
+            debugStr = this.currentDev.GetType().ToString().Split('+')[1];
+                    
+                switch (debugStr)
+                {
+                    case "RGO_LED":
+                        Devices.RGO_LED rgoLED = (Devices.RGO_LED)this.currentDev;
+                        if (RGO_LED_ACTION(rgoLED, this.currentCmd))
+                            this.result = "LED command success!";
+                        break;
+                    case "OutputRelay":
+                        Devices.OutputRelay outputRELAY = (Devices.OutputRelay)this.currentDev;
+                        if (OUTPUT_RELAY_ACTION(outputRELAY, this.currentCmd))
+                            this.result = "Output Relay command success!";
+                        break;
+                    default:
+                        break;
+                }
+        }
+
+        private bool RGO_LED_ACTION(Devices.RGO_LED rgoled, Command cmd )
+        {
+            // Need ability for controlled flashing of LED via a format found in cmd.Arguments
             switch (cmd.Action.ToLower())
             {
                 case "red":
                     rgoled.Red();
-                    break;
+                    return true;
                 case "green":
                     rgoled.Green();
-                    break;
+                    return true;
                 case "amber":
                     rgoled.Amber();
-                    break;
+                    return true;
+                case "off":
+                    rgoled.Off();
+                    return true;
                 default:
                     rgoled.Off();
-                    break;
+                    return false;
+            }
+        }
+
+        private bool OUTPUT_RELAY_ACTION(Devices.OutputRelay outputrelay, Command cmd)
+        {
+            switch (cmd.Action.ToLower())
+            {
+                case "on":
+                    outputrelay.On();
+                    return true;
+                case "off":
+                    outputrelay.Off();
+                    return true;
+                default:
+                    return false;
             }
         }
 
