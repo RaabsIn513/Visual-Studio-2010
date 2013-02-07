@@ -215,9 +215,34 @@ namespace NetduinoControllerProject
         private OutputPort Pin2 { get; set; }
     }
     
-    public class OutPutRelay : Devices
+    public class OutputRelay : Devices
     {
+        private bool isSet = false;
+        private bool pinState = false;
+        
+        public OutputRelay(string Name, string Description, int DeviceID, OutputPort drivePin)
+        {
+            this.drivePin = drivePin;
+            this.deviceInfo.Name = Name;
+            this.deviceInfo.Description = Description;
+            this.deviceInfo.DeviceID = DeviceID;
 
+            isSet = true;
+        }
+
+        private void On()
+        {
+            drivePin.Write(true);
+            pinState = true;
+        }
+
+        private void Off()
+        {
+            drivePin.Write(false);
+            pinState = false;
+        }
+
+        private OutputPort drivePin { get; set; }
     }
 
     public class LCD_HD44780 : Devices
