@@ -5,73 +5,117 @@ using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.Netduino;
 using System.Threading;
 using Toolbox.NETMF.Hardware;
-
+using System.Collections;
 
 namespace NetduinoControllerProject
 {
-    class DevService 
+    class DevService
     {
-        private Devices currentDevice;
-        private Command pendingCmds;
-        private Thread serviceDevicesThd = null;
+        private Thread serviceCtrl;
+        public Devices[] deviceList = new Devices[4];
         public delegate void outputStatus(object obj);          // status output to another thread. 
-        public delegate void inputCmd(object obj);
         public outputStatus status;
-        public inputCmd cmd;
+        public delegate void inputCmd(object obj);
+        public static inputCmd serviceCmd;
         public static int maxCommandsToService = 5;
-        public Command[] commands = new Command[maxCommandsToService];             // accept up to maxCommandsToService commands at a time...
         public bool cancel = false;
+        private Command cmdInput = new Command();
+        private bool iCancel = false;
+        static bool iCmdToService = false;
 
+        #region Constructor
+        
         public DevService()
         {
-            this.serviceDevicesThd = new Thread(startServiceDevices);
-            cmd = acceptCommand;
-
-            for (int i = 0; i < maxCommandsToService; i++)
-                commands[i] = null;
+            serviceCmd = AcceptCmd;
+            this.serviceCtrl = new Thread(service_Thread);
         }
 
+        #endregion
 
-        public void acceptCommand(object aCmd)
+        /// <summary>
+        /// Accepts a command from an external thread. 
+        /// </summary>
+        /// <param name="aCmd"></param>
+        public void AcceptCmd(object aCmd)
         {
-            for (int i = 0; i < maxCommandsToService; i++)
-            {
-                if (commands[i] == null)                                    // i'd rather have a push here. 
-                {
-                    commands[i] = new Command(aCmd.ToString());
-                    Debug.Print("Accepted new command to command array");
-                }
+            lock (this.cmdInput)
+            {       // Possibly add to a Que structure for higher performance/less bottle neck
+                this.cmdInput = (Command)aCmd;
+                iCmdToService = true;
             }
         }
 
+        /// <summary>
+        /// Start the devices service thread.
+        /// </summary>
         public void Start()
         {
-            serviceDevicesThd.Start();
-            Debug.Print("Started serviceDevicesThd");
+            this.serviceCtrl.Start();
         }
 
-        private void startServiceDevices()
-        {            
-            int servIndex = 0;
-            while (!cancel)
+        /// <summary>
+        /// Device's service therad. Takes commands recieved and determines 
+        /// which device is to execute the action included within the command.
+        /// (future) get information about result of execution of command 
+        /// when applicable. 
+        /// </summary>
+        private void service_Thread()
+        {
+            while (!iCancel)
             {
-                if (commands[0] != null)        // then we've got something to do... i'd rather have a pop here
+                while (iCmdToService)
                 {
-                    switch (commands[0].Device.ToLower())
-                    {
-                        case "led":
-                            
-                            break;
+                    Debug.Print("Command being serviced here...");
+                    // Determine device
+                    Devices debugDev = getDeviceByID(this.cmdInput.DeviceID);
 
+                    string debugStr = debugDev.GetType().ToString();
+                    debugStr = debugDev.GetType().ToString().Split( '+' )[1];
+                    
+                    switch (debugStr)
+                    {
+                        case "RGO_LED":
+                            Devices.RGO_LED temp = (Devices.RGO_LED)debugDev;
+                            RGO_LED_ACTION(temp, this.cmdInput);
+                            break;
                         default:
-                            Debug.Print("Unable to interpret device command recieved in device service thread for device type : " + commands[0].Device.ToUpper() );
                             break;
                     }
-                    
+
+                    iCmdToService = false;
                 }
-                Thread.Sleep(5);
-                Debug.Print("In device service thread");
+                Thread.Sleep(10);
             }
+        }
+
+        private void RGO_LED_ACTION(Devices.RGO_LED rgoled, Command cmd )
+        {
+            switch (cmd.Action.ToLower())
+            {
+                case "red":
+                    rgoled.Red();
+                    break;
+                case "green":
+                    rgoled.Green();
+                    break;
+                case "amber":
+                    rgoled.Amber();
+                    break;
+                default:
+                    rgoled.Off();
+                    break;
+            }
+        }
+
+        private Devices getDeviceByID(int ID)
+        {
+            for (int i = 0; i < this.deviceList.Length; i++)
+            {
+                if (this.deviceList[i].deviceInfo.DeviceID == ID)
+                    return this.deviceList[i];              
+            }
+            return new Devices();
         }
     }
 }

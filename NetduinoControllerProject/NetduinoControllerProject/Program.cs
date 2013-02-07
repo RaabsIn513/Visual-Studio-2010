@@ -7,6 +7,7 @@ using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.Netduino;
 
+
 namespace NetduinoControllerProject
 {
     public class Program
@@ -15,9 +16,9 @@ namespace NetduinoControllerProject
         public delegate void UpdateDebugOutputDelegate(object obj);
         public UpdateDebugOutputDelegate del;
 
-        //private static DevService devService = new DevService();
-        private static Devices ctrlDevices = new Devices();
-        private static Devices.RGO_LED led = new Devices.RGO_LED(
+        private static DevService devService = new DevService();
+
+        private static Devices.RGO_LED led = new Devices.RGO_LED("LED", "Red/Green/Amber Three pin 5mm LED", 0,
             new OutputPort(Pins.GPIO_PIN_D8, false),
             new OutputPort(Pins.GPIO_PIN_D9, false),
             new OutputPort(Pins.GPIO_PIN_D10, false) );
@@ -26,27 +27,19 @@ namespace NetduinoControllerProject
         //private static Devices.LCD_HD44780 = new Devices.LCD_HD44780(
         //);
 
-        private void initDevices()
-        {
-            led.deviceInfo.DisplayText = "Red, Green, Orange LED";
-            led.deviceInfo.Name = "RGO_LED";
-            
-        }
-        
-        public void initComm()
-        {
-        }
-        
+       
         public static void Main()
         {
+            devService.deviceList[0] = led;
+
             Server server = new Server(servListenPort);
             Client client = new Client("192.168.1.147", 12000);
 
             //server.serverDel = new Server.externThread(updatePinOutputs);
             //server.serverDel = new Server.externThread(devService.cmd);         // set commands recieved by the server to be handled by devService
-            server.serverDel = new Server.externThread(Devices.serviceCmd);
+            server.serverDel = new Server.externThread(DevService.serviceCmd);
 
-            ctrlDevices.Start();                                   // start the thread that handles commands. 
+            devService.Start();                                   // start the thread that handles commands. 
             Debug.Print("Started serviceDevicesThread");
                        
             server.Start();                                                     // start the thread that recieves commands
@@ -69,12 +62,11 @@ namespace NetduinoControllerProject
                 if (client.Send(DateTime.Now.ToLocalTime().ToString() + "- Netduino running(" + server.IPaddress + ")"))
                 {
                     Debug.Print("Message Sent and Acknowledged!");
-                    led.Amber();
-                    Thread.Sleep(500);
+                    //led.Amber();
+                    Thread.Sleep(2500);
                 }
-                led.Green();
-                Thread.Sleep(2500);
-                
+                //led.Green();
+                //Thread.Sleep(2500);
             }
         }
 

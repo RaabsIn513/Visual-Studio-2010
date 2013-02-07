@@ -9,6 +9,7 @@ namespace NetduinoControllerProject
         public bool isEmpty { get { return iIsEmpty; } }
         public string Device { get; set; }
         public string Action { get; set; }
+        public int DeviceID { get; set; }
 
         /// <summary>
         /// Instantiates a new web command definition.

@@ -121,6 +121,7 @@ namespace NetduinoHostProject
                 int rowNum = dgv_clientMess.Rows.Add();
                 this.dgv_clientMess.Rows[rowNum].Cells["Time"].Value = DateTime.Now.ToLongTimeString();
                 this.dgv_clientMess.Rows[rowNum].Cells["Message"].Value = text;
+                this.dgv_clientMess.FirstDisplayedScrollingRowIndex = rowNum;
             }
             catch (Exception ex)
             {
